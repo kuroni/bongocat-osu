@@ -79,6 +79,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	int greenValue = cfg["decoration"]["green"].asInt();
 	int blueValue = cfg["decoration"]["blue"].asInt();
 	bool isLeftHanded = cfg["decoration"]["leftHanded"].asBool();
+	bool rgbArm = cfg["decoration"]["rgbArm"].asBool();
 	double mouseDX = cfg["decoration"]["mouseXOffset"].asInt();
 	double mouseDY = cfg["decoration"]["mouseYOffset"].asInt();
 	double mouseScale = cfg["decoration"]["mouseScalar"].asInt();
@@ -100,8 +101,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		loadTexture(bgTex, "img/osu/mousebg.png");
 	}
 	else {
-	double timerLeftKey = -1;
-	double timerRightKey = -1;
 		loadTexture(bgTex, "img/osu/tabletbg.png");
 	}
 	sf::Sprite bg(bgTex);
@@ -377,9 +376,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		sf::VertexArray fill(sf::TriangleStrip, 26);
 		for (int i = 0; i < 26; i += 2) {
 			fill[i].position = sf::Vector2f(pss2[i], pss2[i + 1]);
-			fill[i].color = sf::Color(redValue, greenValue, blueValue);
 			fill[i + 1].position = sf::Vector2f(pss2[52 - i - 2], pss2[52 - i - 1]);
-			fill[i + 1].color = sf::Color(redValue, greenValue, blueValue);
+			if (rgbArm) {
+				fill[i].color = sf::Color(redValue, greenValue, blueValue);
+				fill[i + 1].color = sf::Color(redValue, greenValue, blueValue);
+			}
 		}
 		window.draw(fill);
 

@@ -11,6 +11,7 @@
         "green": 255,
         "blue": 255,
         "leftHanded": false,
+        "rgbArm": false,
         "mouseXOffset": 0,
         "mouseYOffset": 0,
         "mouseScalar": 1,
@@ -24,10 +25,10 @@
         "key2": 88
     },
     "taiko": {
-        "keyLeftCentre": 123,
-        "keyRightCentre": 123,
-        "keyLeftRim": 123,
-        "keyRightRim": 123
+        "keyLeftCentre": 88,
+        "keyRightCentre": 67,
+        "keyLeftRim": 90,
+        "keyRightRim": 86
     },
     "catch": {
         "left": 123,
