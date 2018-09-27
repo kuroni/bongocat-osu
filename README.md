@@ -5,7 +5,7 @@ You can find basic information in our [wiki](https://github.com/kuroni/bongocat-
 
 Any suggestion and/or collaboration is welcomed! Thank you!
 
-[Original post](https://www.reddit.com/r/osugame/comments/9hrkte/i_know_bongo_cat_is_getting_old_but_heres_a_nicer/).
+[Original post](https://www.reddit.com/r/osugame/comments/9hrkte/i_know_bongo_cat_is_getting_old_but_heres_a_nicer/) by [u/Kuvster](https://github.com/Kuvster).
 
 ## Further information
 In order to play with fullscreen on Windows 10, run both osu! and this application in Windows 7 compability mode.
