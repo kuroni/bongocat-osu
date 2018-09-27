@@ -1,6 +1,6 @@
 {
     "resolution": {
-        "letterboxing": true,
+        "letterboxing": false,
         "width": 1920,
         "height": 1080,
         "horizontalPosition": 100,
@@ -10,6 +10,7 @@
         "red": 255,
         "green": 255,
         "blue": 255,
+        "leftHanded": false,
         "mouseXOffset": 0,
         "mouseYOffset": 0,
         "mouseScalar": 1,

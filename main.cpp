@@ -78,6 +78,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	int redValue = cfg["decoration"]["red"].asInt();
 	int greenValue = cfg["decoration"]["green"].asInt();
 	int blueValue = cfg["decoration"]["blue"].asInt();
+	bool isLeftHanded = cfg["decoration"]["leftHanded"].asBool();
 	double mouseDX = cfg["decoration"]["mouseXOffset"].asInt();
 	double mouseDY = cfg["decoration"]["mouseYOffset"].asInt();
 	double mouseScale = cfg["decoration"]["mouseScalar"].asInt();
@@ -204,6 +205,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		POINT point;
 		if (GetCursorPos(&point)) {
 			double fx = ((double)point.x - letterX) / sWidth;
+			if (isLeftHanded) {
+				fx = 1 - fx;
+			}
 			double fy = ((double)point.y - letterY) / sHeight;
 			fx = std::min(fx, 1.0);
 			fx = std::max(fx, 0.0);
@@ -369,11 +373,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 			window.draw(device);
 		}
 
-		// drawing fill
+		// drawing arms
 		sf::VertexArray fill(sf::TriangleStrip, 26);
 		for (int i = 0; i < 26; i += 2) {
 			fill[i].position = sf::Vector2f(pss2[i], pss2[i + 1]);
+			fill[i].color = sf::Color(redValue, greenValue, blueValue);
 			fill[i + 1].position = sf::Vector2f(pss2[52 - i - 2], pss2[52 - i - 1]);
+			fill[i + 1].color = sf::Color(redValue, greenValue, blueValue);
 		}
 		window.draw(fill);
 
