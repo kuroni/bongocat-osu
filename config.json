@@ -11,6 +11,7 @@
         "green": 255,
         "blue": 255,
         "leftHanded": false,
+        "rgbArm": false,
         "mouseXOffset": 0,
         "mouseYOffset": 0,
         "mouseScalar": 1,
