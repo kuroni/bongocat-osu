@@ -85,9 +85,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	double tabletDY = cfg["decoration"]["tabletYOffset"].asInt();
 	double tabletScale = cfg["decoration"]["tabletScalar"].asInt();
 
+	bool isSwitch = false;
+	int keyState = 0;
+	bool leftKeyState = false;
+	bool rightKeyState = false;
 	double timerLeftKey = -1;
 	double timerRightKey = -1;
-	bool isSwitch = false;
 
 	// loading textures
 
@@ -96,6 +99,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		loadTexture(bgTex, "img/osu/mousebg.png");
 	}
 	else {
+	double timerLeftKey = -1;
+	double timerRightKey = -1;
 		loadTexture(bgTex, "img/osu/tabletbg.png");
 	}
 	sf::Sprite bg(bgTex);
@@ -143,7 +148,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 		bool isBongo;
 
-		// getting resolution?
+		// getting resolution
 
 		HWND handle = GetForegroundWindow();
 		if (handle) {
@@ -235,17 +240,30 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		}
 	
 		// drawing keypresses
-		int key = 0;
 		if (GetKeyState(leftKeyValue) & 0x8000) {
-			key = 1;
+			if (!leftKeyState) {
+				keyState = 1;
+				leftKeyState = true;
+			}
 		}
+		else {
+			leftKeyState = false;
+		}
+
 		if (GetKeyState(rightKeyValue) & 0x8000) {
-			key = 2;
+			if (!rightKeyState) {
+				keyState = 2;
+				rightKeyState = true;
+			}
 		}
-		if (key == 0) {
+		else {
+			rightKeyState = false;
+		}
+		if (!leftKeyState && !rightKeyState) {
+			keyState = 0;
 			window.draw(up);
 		}
-		else if (key == 1) {
+		if (keyState == 1) {
 			if (clock() - 31 > timerRightKey) {
 				window.draw(left);
 				timerLeftKey = clock();
@@ -254,7 +272,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				window.draw(up);
 			}
 		}
-		else if (key == 2) {
+		else if (keyState == 2) {
 			if (clock() - 31 > timerLeftKey) {
 				window.draw(right);
 				timerRightKey = clock();
