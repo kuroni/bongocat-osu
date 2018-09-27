@@ -9,8 +9,7 @@
 #include <math.h>
 
 #include <SFML/Graphics.hpp>
-#include <json/value.h>
-#include <json/reader.h>
+#include "json/json.h"
 
 std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length) {
 	double fact[22] = {0.001, 0.001, 0.002, 0.006, 0.024, 0.12, 0.72, 5.04, 40.32, 362.88, 3628.8, 39916.8, 479001.6, 6227020.8, 87178291.2, 1307674368.0, 20922789888.0, 355687428096.0, 6402373705728.0, 121645100408832.0, 2432902008176640.0, 51090942171709440.0};
@@ -42,6 +41,40 @@ void loadTexture(sf::Texture &tex, std::string path) {
 	}
 }
 
+void createConfig() {
+	std::ifstream f("config.json");
+	if (!f.good()) {
+		std::ofstream cfg("config.json");
+		cfg << "{ \n \
+	\"resolution\": { \n \
+		\"letterboxing\": false, \n \
+		\"width\": 1920, \n \
+		\"height\": 1080, \n \
+		\"horizontalPosition\": 100, \n \
+		\"verticalPosition\": -100 \n \
+	}, \n \
+	\"decoration\": { \n \
+		\"red\": 255, \n \
+		\"green\": 255, \n \
+		\"blue\": 255, \n \
+		\"leftHanded\": false, \n \
+		\"rgbArm\": false, \n \
+		\"mouseXOffset\": 0, \n \
+		\"mouseYOffset\": 0, \n \
+		\"mouseScalar\": 1, \n \
+		\"tabletXOffset\": 11, \n \
+		\"tabletYOffset\": -65, \n \
+		\"tabletScalar\": 1 \n \
+	}, \n \
+	\"osu\": { \n \
+		\"mouse\": true, \n \
+		\"key1\": 90, \n \
+		\"key2\": 88 \n \
+	} \n \
+}";
+	}
+}
+
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	sf::RenderWindow window(sf::VideoMode(612, 352), "\"ESC\" for Mouse |  Set Keys/Letterboxing etc. in \"config.json\"", sf::Style::Titlebar | sf::Style::Close);
 	window.setFramerateLimit(240);
@@ -52,6 +85,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	// loading configs
 
+	createConfig();
 	std::ifstream cfgFile("config.json", std::ifstream::binary);
 	std::string cfgString((std::istreambuf_iterator<char>(cfgFile)), std::istreambuf_iterator<char>());
 	Json::Reader cfgReader;
