@@ -1,7 +1,9 @@
 # Description
 An osu! Bongo Cat overlay with smooth paw movement and simple skinning ability, written in C++.
 
-You can find basic information in our [wiki](https://github.com/kuroni/bongocat-osu/wiki), including how to configure and developing information.
+You can find how to configure the application in our [wiki](https://github.com/kuroni/bongocat-osu/wiki).
+
+Releases can be found [here](https://github.com/kuroni/bongocat-osu/releases).
 
 Any suggestion and/or collaboration is welcomed! Thank you!
 
