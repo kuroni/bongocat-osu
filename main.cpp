@@ -84,7 +84,7 @@ void createConfig()
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	sf::RenderWindow window(sf::VideoMode(612, 352), "\"ESC\" for Mouse |  Set Keys/Letterboxing etc. in \"config.json\"", sf::Style::Titlebar | sf::Style::Close);
+	sf::RenderWindow window(sf::VideoMode(612, 352), "ESC for switching device", sf::Style::Titlebar | sf::Style::Close);
 	window.setFramerateLimit(240);
 
 	int horizontal = 0;
@@ -182,8 +182,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		double sWidth;
 		double sHeight;
 
-		// getting resolution
+		bool isBongo;
 
+		// getting resolution
 		HWND handle = GetForegroundWindow();
 		if (handle)
 		{
@@ -220,9 +221,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 				letterX = 0;
 				letterY = 0;
 			}
+			index = test.find("ESC");
+			if (index < 300)
+				isBongo = true;
+			else
+				isBongo = false;
 		}
 		else
 		{
+			isBongo = false;
 			sWidth = horizontal;
 			sHeight = vertical;
 			letterX = 0;
@@ -252,7 +259,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		// ESCAPE for switching device
 		// A few suggestion here, instead of switching device, we can implement so that ESCAPE means reloading the config.json file
 		// Which is better for later on since I'm planning to support other game modes
-		if (GetKeyState(VK_ESCAPE) & 0x8000)
+		if ((GetKeyState(VK_ESCAPE) & 0x8000) && isBongo)
 		{
 			if (!isSwitch)
 			{
