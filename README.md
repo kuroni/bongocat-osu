@@ -15,3 +15,11 @@ In order to play with fullscreen on Windows 10, run both osu! and this applicati
 Supported operating system:
 * Windows
 * Linux (tested with Arch Linux 4.18.9 with Wine 3.16)
+
+## Todo
+* Support other modes.
+* Optimize further for consistency and speed.
+* Allow even more customizations.
+
+## For developers
+This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https://github.com/open-source-parsers/jsoncpp). JsonCpp libraries are directly included in the source.
