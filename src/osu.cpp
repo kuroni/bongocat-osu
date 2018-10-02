@@ -1,90 +1,4 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <map>
-
-#include <time.h>
-#include <windows.h>
-#include <math.h>
-
-#include <SFML/Graphics.hpp>
-#include "json/json.h"
-
-sf::RenderWindow window(sf::VideoMode(612, 352), "ESC for switching device", sf::Style::Titlebar | sf::Style::Close);
-HWND handle;
-TCHAR w_title[256];
-std::string title;
-
-namespace data
-{
-std::map<std::string, sf::Texture> img_holder;
-Json::Value cfg;
-
-void create_config()
-{
-    std::ifstream f("config.json");
-    if (!f.good())
-    {
-        std::ofstream cfg("config.json");
-        cfg << "{ \n \
-	\"resolution\": { \n \
-		\"letterboxing\": false, \n \
-		\"width\": 1920, \n \
-		\"height\": 1080, \n \
-		\"horizontalPosition\": 100, \n \
-		\"verticalPosition\": -100 \n \
-	}, \n \
-	\"decoration\": { \n \
-		\"red\": 255, \n \
-		\"green\": 255, \n \
-		\"blue\": 255, \n \
-		\"leftHanded\": false, \n \
-		\"rgbArm\": false, \n \
-		\"mouseXOffset\": 0, \n \
-		\"mouseYOffset\": 0, \n \
-		\"mouseScalar\": 1, \n \
-		\"tabletXOffset\": 11, \n \
-		\"tabletYOffset\": -65, \n \
-		\"tabletScalar\": 1 \n \
-	}, \n \
-	\"osu\": { \n \
-		\"mouse\": true, \n \
-		\"key1\": 90, \n \
-		\"key2\": 88 \n \
-	} \n \
-}";
-    }
-}
-
-bool init()
-{
-    create_config();
-    std::ifstream cfg_file("config.json", std::ifstream::binary);
-    std::string cfg_string((std::istreambuf_iterator<char>(cfg_file)), std::istreambuf_iterator<char>());
-    Json::Reader cfg_reader;
-    if (!cfg_reader.parse(cfg_string, cfg))
-    {
-        std::cout << "Error reading the config\n";
-        return false;
-    }
-    cfg_file.close();
-
-    img_holder.clear();
-    return true;
-}
-
-sf::Texture &load_texture(std::string path)
-{
-    if (img_holder.find(path) == img_holder.end())
-        if (!img_holder[path].loadFromFile(path))
-        {
-            // handle error here
-        }
-    return img_holder[path];
-}
-}; // namespace data
+#include "header.hpp"
 
 namespace osu
 {
@@ -254,7 +168,7 @@ void draw()
     }
     if (key_state == 1)
     {
-        if (clock() - timer_right_key > 31)
+        if ((clock() - timer_right_key) / CLOCKS_PER_SEC > 0.031)
         {
             window.draw(left);
             timer_left_key = clock();
@@ -264,7 +178,7 @@ void draw()
     }
     else if (key_state == 2)
     {
-        if (clock() - timer_left_key > 31)
+        if ((clock() - timer_left_key) / CLOCKS_PER_SEC > 0.031)
         {
             window.draw(right);
             timer_right_key = clock();
@@ -433,61 +347,3 @@ void draw()
         window.draw(device);
 }
 }; // namespace osu
-
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-{
-    window.setFramerateLimit(240);
-
-    // loading configs
-
-    if (data::init())
-        std::cout << "Reading config completed!\n";
-    osu::init();
-
-    int red_value = data::cfg["decoration"]["red"].asInt();
-    int green_value = data::cfg["decoration"]["green"].asInt();
-    int blue_value = data::cfg["decoration"]["blue"].asInt();
-
-    bool is_reload = false;
-
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-            if (event.type == sf::Event::Closed)
-                window.close();
-        window.clear(sf::Color(red_value, green_value, blue_value));
-
-        bool is_bongo = false;
-
-        handle = GetForegroundWindow();
-        if (handle)
-        {
-            TCHAR w_title[256];
-            GetWindowText(handle, w_title, GetWindowTextLength(handle));
-            std::string title = w_title;
-            is_bongo = (title.find("ESC") < 300);
-        }
-
-        // ESCAPE for switching device
-        // A few suggestion here, instead of switching device, we can implement so that ESCAPE means reloading the config.json file
-        // Which is better for later on since I'm planning to support other game modes
-        if ((GetKeyState(VK_ESCAPE) & 0x8000) && is_bongo)
-        {
-            if (!is_reload)
-            {
-                data::init();
-                osu::init();
-            }
-            is_reload = true;
-        }
-        else
-            is_reload = false;
-
-        osu::draw();
-
-        window.display();
-    }
-
-    return 0;
-}
