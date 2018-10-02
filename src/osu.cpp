@@ -170,7 +170,10 @@ void draw()
     {
         if ((clock() - timer_right_key) / CLOCKS_PER_SEC > 0.031)
         {
-            window.draw(left);
+            if (!is_left_handed)
+                window.draw(left);
+            else
+                window.draw(right);
             timer_left_key = clock();
         }
         else
@@ -180,7 +183,10 @@ void draw()
     {
         if ((clock() - timer_left_key) / CLOCKS_PER_SEC > 0.031)
         {
-            window.draw(right);
+            if (!is_left_handed)
+                window.draw(right);
+            else
+                window.draw(left);
             timer_right_key = clock();
         }
         else

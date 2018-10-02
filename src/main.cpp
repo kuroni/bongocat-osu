@@ -57,7 +57,7 @@ bool init()
     std::ifstream cfg_file("config.json", std::ifstream::binary);
     std::string cfg_string((std::istreambuf_iterator<char>(cfg_file)), std::istreambuf_iterator<char>()), error;
     Json::CharReaderBuilder cfg_builder;
-    Json::CharReader * cfg_reader = cfg_builder.newCharReader();
+    Json::CharReader *cfg_reader = cfg_builder.newCharReader();
     if (!cfg_reader->parse(cfg_string.c_str(), cfg_string.c_str() + cfg_string.size(), &cfg, &error))
     {
         std::cout << "Error reading the config: " << error << std::endl;
@@ -120,9 +120,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             is_bongo = (title.find("ESC") < 300);
         }
 
-        // ESCAPE for switching device
-        // A few suggestion here, instead of switching device, we can implement so that ESCAPE means reloading the config.json file
-        // Which is better for later on since I'm planning to support other game modes
+        // reloading config device
         if ((GetKeyState(VK_ESCAPE) & 0x8000) && is_bongo)
         {
             if (!is_reload)
