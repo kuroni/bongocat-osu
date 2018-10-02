@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <map>
 
 #include <time.h>
 #include <windows.h>
@@ -11,48 +12,23 @@
 #include <SFML/Graphics.hpp>
 #include "json/json.h"
 
-std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length)
+sf::RenderWindow window(sf::VideoMode(612, 352), "ESC for switching device", sf::Style::Titlebar | sf::Style::Close);
+HWND handle;
+TCHAR w_title[256];
+std::string title;
+
+namespace data
 {
-	double fact[22] = {0.001, 0.001, 0.002, 0.006, 0.024, 0.12, 0.72, 5.04, 40.32, 362.88, 3628.8, 39916.8, 479001.6, 6227020.8, 87178291.2, 1307674368.0, 20922789888.0, 355687428096.0, 6402373705728.0, 121645100408832.0, 2432902008176640.0, 51090942171709440.0};
-	int nn = (length / 2) - 1;
-	double xx = 0;
-	double yy = 0;
+std::map<std::string, sf::Texture> img_holder;
+Json::Value cfg;
 
-	for (int point = 0; point <= nn; point++)
-	{
-		double tmp = fact[nn] / (fact[point] * fact[nn - point]) * pow(ratio, point) * pow(1 - ratio, nn - point);
-		xx += points[2 * point] * tmp;
-		yy += points[2 * point + 1] * tmp;
-	}
-
-	return std::make_tuple(xx / 1000, yy / 1000);
-}
-
-void GetDesktopResolution(int &horizontal, int &vertical)
+void create_config()
 {
-	RECT desktop;
-	const HWND hDesktop = GetDesktopWindow();
-	GetWindowRect(hDesktop, &desktop);
-	horizontal = desktop.right;
-	vertical = desktop.bottom;
-}
-
-void loadTexture(sf::Texture &tex, std::string path)
-{
-	if (!tex.loadFromFile(path))
-	{
-		// error here
-		// exit(1);
-	}
-}
-
-void createConfig()
-{
-	std::ifstream f("config.json");
-	if (!f.good())
-	{
-		std::ofstream cfg("config.json");
-		cfg << "{ \n \
+    std::ifstream f("config.json");
+    if (!f.good())
+    {
+        std::ofstream cfg("config.json");
+        cfg << "{ \n \
 	\"resolution\": { \n \
 		\"letterboxing\": false, \n \
 		\"width\": 1920, \n \
@@ -79,430 +55,439 @@ void createConfig()
 		\"key2\": 88 \n \
 	} \n \
 }";
-	}
+    }
 }
+
+bool init()
+{
+    create_config();
+    std::ifstream cfg_file("config.json", std::ifstream::binary);
+    std::string cfg_string((std::istreambuf_iterator<char>(cfg_file)), std::istreambuf_iterator<char>());
+    Json::Reader cfg_reader;
+    if (!cfg_reader.parse(cfg_string, cfg))
+    {
+        std::cout << "Error reading the config\n";
+        return false;
+    }
+    cfg_file.close();
+
+    img_holder.clear();
+    return true;
+}
+
+sf::Texture &load_texture(std::string path)
+{
+    if (img_holder.find(path) == img_holder.end())
+        if (!img_holder[path].loadFromFile(path))
+        {
+            // handle error here
+        }
+    return img_holder[path];
+}
+}; // namespace data
+
+namespace osu
+{
+int left_key_value, right_key_value;
+int osu_x, osu_y, osu_h, osu_v;
+int offset_x, offset_y, scale;
+int horizontal, vertical;
+bool is_mouse, is_letterbox, is_left_handed;
+sf::Sprite bg, up, left, right, device;
+
+int key_state = 0;
+bool left_key_state = false;
+bool right_key_state = false;
+double timer_left_key = -1;
+double timer_right_key = -1;
+
+std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length)
+{
+    double fact[22] = {0.001, 0.001, 0.002, 0.006, 0.024, 0.12, 0.72, 5.04, 40.32, 362.88, 3628.8, 39916.8, 479001.6, 6227020.8, 87178291.2, 1307674368.0, 20922789888.0, 355687428096.0, 6402373705728.0, 121645100408832.0, 2432902008176640.0, 51090942171709440.0};
+    int nn = (length / 2) - 1;
+    double xx = 0;
+    double yy = 0;
+
+    for (int point = 0; point <= nn; point++)
+    {
+        double tmp = fact[nn] / (fact[point] * fact[nn - point]) * pow(ratio, point) * pow(1 - ratio, nn - point);
+        xx += points[2 * point] * tmp;
+        yy += points[2 * point + 1] * tmp;
+    }
+
+    return std::make_tuple(xx / 1000, yy / 1000);
+}
+
+void init()
+{
+    // getting configs
+    is_mouse = data::cfg["osu"]["mouse"].asBool();
+    left_key_value = data::cfg["osu"]["key1"].asInt();
+    right_key_value = data::cfg["osu"]["key2"].asInt();
+
+    is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
+    osu_x = data::cfg["resolution"]["width"].asInt();
+    osu_y = data::cfg["resolution"]["height"].asInt();
+    osu_h = data::cfg["resolution"]["horizontalPosition"].asInt();
+    osu_v = data::cfg["resolution"]["verticalPosition"].asInt();
+    is_left_handed = data::cfg["decoration"]["leftHanded"].asBool();
+
+    if (is_mouse)
+    {
+        offset_x = (data::cfg["decoration"]["offsetX"])[0].asInt();
+        offset_y = (data::cfg["decoration"]["offsetY"])[0].asInt();
+        scale = (data::cfg["decoration"]["scalar"])[0].asInt();
+    }
+    else
+    {
+        offset_x = (data::cfg["decoration"]["offsetX"])[1].asInt();
+        offset_y = (data::cfg["decoration"]["offsetY"])[1].asInt();
+        scale = (data::cfg["decoration"]["scalar"])[1].asInt();
+    }
+    // reading sprites
+    up.setTexture(data::load_texture("img/osu/up.png"));
+    left.setTexture(data::load_texture("img/osu/left.png"));
+    right.setTexture(data::load_texture("img/osu/right.png"));
+    if (is_mouse)
+    {
+        bg.setTexture(data::load_texture("img/osu/mousebg.png"));
+        device.setTexture(data::load_texture("img/osu/mouse.png"), true);
+    }
+    else
+    {
+        bg.setTexture(data::load_texture("img/osu/tabletbg.png"));
+        device.setTexture(data::load_texture("img/osu/tablet.png"), true);
+    }
+    device.setScale(scale, scale);
+
+    // getting resolution
+    RECT desktop;
+    const HWND h_desktop = GetDesktopWindow();
+    GetWindowRect(h_desktop, &desktop);
+    horizontal = desktop.right;
+    vertical = desktop.bottom;
+}
+
+void draw()
+{
+    // getting device resolution
+    double letter_x, letter_y, s_height, s_width;
+    if (handle)
+    {
+        if (title.find("osu!") < 300)
+        {
+            RECT oblong;
+            GetWindowRect(handle, &oblong);
+            s_height = osu_y * 0.8;
+            s_width = s_height * 4 / 3;
+            if (!is_letterbox)
+            {
+                letter_x = oblong.left + ((oblong.right - oblong.left) - s_width) / 2;
+                letter_y = oblong.top + osu_y * 0.117;
+            }
+            else
+            {
+                double l = (horizontal - osu_x) * (osu_h + 100) / 200.0;
+                double r = l + osu_x;
+                letter_x = l + ((r - l) - s_width) / 2;
+                letter_y = (vertical - osu_y) * (osu_v + 100) / 200.0 + osu_y * 0.117;
+            }
+        }
+        else
+        {
+            s_width = horizontal;
+            s_height = vertical;
+            letter_x = 0;
+            letter_y = 0;
+        }
+    }
+    else
+    {
+        s_width = horizontal;
+        s_height = vertical;
+        letter_x = 0;
+        letter_y = 0;
+    }
+    double x, y;
+    POINT point;
+    if (GetCursorPos(&point))
+    {
+        double fx = ((double)point.x - letter_x) / s_width;
+        if (is_left_handed)
+            fx = 1 - fx;
+        double fy = ((double)point.y - letter_y) / s_height;
+        fx = std::min(fx, 1.0);
+        fx = std::max(fx, 0.0);
+        fy = std::min(fy, 1.0);
+        fy = std::max(fy, 0.0);
+        x = -97 * fx + 44 * fy + 184;
+        y = -76 * fx - 40 * fy + 324;
+    }
+    window.draw(bg);
+
+    // drawing keypresses
+    if (GetKeyState(left_key_value) & 0x8000)
+    {
+        if (!left_key_state)
+        {
+            key_state = 1;
+            left_key_state = true;
+        }
+    }
+    else
+        left_key_state = false;
+
+    if (GetKeyState(right_key_value) & 0x8000)
+    {
+        if (!right_key_state)
+        {
+            key_state = 2;
+            right_key_state = true;
+        }
+    }
+    else
+        right_key_state = false;
+    if (!left_key_state && !right_key_state)
+    {
+        key_state = 0;
+        window.draw(up);
+    }
+    if (key_state == 1)
+    {
+        if (clock() - timer_right_key > 31)
+        {
+            window.draw(left);
+            timer_left_key = clock();
+        }
+        else
+            window.draw(up);
+    }
+    else if (key_state == 2)
+    {
+        if (clock() - timer_left_key > 31)
+        {
+            window.draw(right);
+            timer_right_key = clock();
+        }
+        else
+            window.draw(up);
+    }
+
+    // initializing pss and pss2 (kuvster's magic)
+    int oof = 6;
+    std::vector<double> pss = {211.0, 159.0};
+    double dist = hypot(211 - x, 159 - y);
+    double centreleft0 = 211 - 0.7237 * dist / 2;
+    double centreleft1 = 159 + 0.69 * dist / 2;
+    for (double i = 1; i < oof; i++)
+    {
+        double p0;
+        double p1;
+        std::vector<double> bez = {211, 159, centreleft0, centreleft1, x, y};
+        std::tie(p0, p1) = bezier(i / oof, bez, 6);
+        pss.push_back(p0);
+        pss.push_back(p1);
+    }
+    pss.push_back(x);
+    pss.push_back(y);
+    double a = y - centreleft1;
+    double b = centreleft0 - x;
+    double le = hypot(a, b);
+    a = x + a / le * 60;
+    b = y + b / le * 60;
+    int a1 = 258;
+    int a2 = 228;
+    dist = hypot(a1 - a, a2 - b);
+    double centreright0 = a1 - 0.6 * dist / 2;
+    double centreright1 = a2 + 0.8 * dist / 2;
+    int push = 20;
+    double s = x - centreleft0;
+    double t = y - centreleft1;
+    le = hypot(s, t);
+    s *= push / le;
+    t *= push / le;
+    double s2 = a - centreright0;
+    double t2 = b - centreright1;
+    le = hypot(s2, t2);
+    s2 *= push / le;
+    t2 *= push / le;
+    for (double i = 1; i < oof; i++)
+    {
+        double p0;
+        double p1;
+        std::vector<double> bez = {x, y, x + s, y + t, a + s2, b + t2, a, b};
+        std::tie(p0, p1) = bezier(i / oof, bez, 8);
+        pss.push_back(p0);
+        pss.push_back(p1);
+    }
+    pss.push_back(a);
+    pss.push_back(b);
+    for (double i = oof - 1; i > 0; i--)
+    {
+        double p0;
+        double p1;
+        std::vector<double> bez = {1.0 * a1, 1.0 * a2, centreright0, centreright1, a, b};
+        std::tie(p0, p1) = bezier(i / oof, bez, 6);
+        pss.push_back(p0);
+        pss.push_back(p1);
+    }
+    pss.push_back(a1);
+    pss.push_back(a2);
+    double mpos0 = (a + x) / 2 - 52 - 15;
+    double mpos1 = (b + y) / 2 - 34 + 5;
+    double dx = -38;
+    double dy = -50;
+
+    const int iter = 25;
+
+    std::vector<double> pss2 = {pss[0] + dx, pss[1] + dy};
+    for (double i = 1; i < iter; i++)
+    {
+        double p0;
+        double p1;
+        std::tie(p0, p1) = bezier(i / iter, pss, 38);
+        pss2.push_back(p0 + dx);
+        pss2.push_back(p1 + dy);
+    }
+    pss2.push_back(pss[36] + dx);
+    pss2.push_back(pss[37] + dy);
+
+    device.setPosition(mpos0 + dx + offset_x, mpos1 + dy + offset_y);
+
+    // drawing mouse
+    if (is_mouse)
+        window.draw(device);
+
+    // drawing arms
+    sf::VertexArray fill(sf::TriangleStrip, 26);
+    for (int i = 0; i < 26; i += 2)
+    {
+        fill[i].position = sf::Vector2f(pss2[i], pss2[i + 1]);
+        fill[i + 1].position = sf::Vector2f(pss2[52 - i - 2], pss2[52 - i - 1]);
+    }
+    window.draw(fill);
+
+    // drawing circ
+    int shad = 77;
+    sf::VertexArray edge(sf::TriangleStrip, 52);
+    double width = 7;
+    sf::CircleShape circ(width / 2);
+    circ.setFillColor(sf::Color(0, 0, 0, shad));
+    circ.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
+    window.draw(circ);
+    for (int i = 0; i < 50; i += 2)
+    {
+        double vec0 = pss2[i] - pss2[i + 2];
+        double vec1 = pss2[i + 1] - pss2[i + 3];
+        double dist = hypot(vec0, vec1);
+        edge[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
+        edge[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
+        edge[i].color = sf::Color(0, 0, 0, shad);
+        edge[i + 1].color = sf::Color(0, 0, 0, shad);
+        width -= 0.08;
+    }
+    double vec0 = pss2[50] - pss2[48];
+    double vec1 = pss2[51] - pss2[49];
+    dist = hypot(vec0, vec1);
+    edge[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
+    edge[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
+    edge[50].color = sf::Color(0, 0, 0, shad);
+    edge[51].color = sf::Color(0, 0, 0, shad);
+    window.draw(edge);
+    circ.setRadius(width / 2);
+    circ.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
+    window.draw(circ);
+
+    // drawing circ2
+    sf::VertexArray edge2(sf::TriangleStrip, 52);
+    width = 6;
+    sf::CircleShape circ2(width / 2);
+    circ2.setFillColor(sf::Color::Black);
+    circ2.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
+    window.draw(circ2);
+    for (int i = 0; i < 50; i += 2)
+    {
+        vec0 = pss2[i] - pss2[i + 2];
+        vec1 = pss2[i + 1] - pss2[i + 3];
+        double dist = hypot(vec0, vec1);
+        edge2[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
+        edge2[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
+        edge2[i].color = sf::Color::Black;
+        edge2[i + 1].color = sf::Color::Black;
+        width -= 0.08;
+    }
+    vec0 = pss2[50] - pss2[48];
+    vec1 = pss2[51] - pss2[49];
+    dist = hypot(vec0, vec1);
+    edge2[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
+    edge2[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
+    edge2[50].color = sf::Color::Black;
+    edge2[51].color = sf::Color::Black;
+    window.draw(edge2);
+    circ2.setRadius(width / 2);
+    circ2.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
+    window.draw(circ2);
+
+    // drawing tablet
+    if (!is_mouse)
+        window.draw(device);
+}
+}; // namespace osu
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	sf::RenderWindow window(sf::VideoMode(612, 352), "ESC for switching device", sf::Style::Titlebar | sf::Style::Close);
-	window.setFramerateLimit(240);
+    window.setFramerateLimit(240);
 
-	int horizontal = 0;
-	int vertical = 0;
-	GetDesktopResolution(horizontal, vertical);
+    // loading configs
 
-	// loading configs
+    if (data::init())
+        std::cout << "Reading config completed!\n";
+    osu::init();
 
-	createConfig();
-	std::ifstream cfgFile("config.json", std::ifstream::binary);
-	std::string cfgString((std::istreambuf_iterator<char>(cfgFile)), std::istreambuf_iterator<char>());
-	Json::Reader cfgReader;
-	Json::Value cfg;
-	if (!cfgReader.parse(cfgString, cfg))
-	{
-		std::cout << "Error reading the config\n";
-		return 0;
-	}
-	cfgFile.close();
+    int red_value = data::cfg["decoration"]["red"].asInt();
+    int green_value = data::cfg["decoration"]["green"].asInt();
+    int blue_value = data::cfg["decoration"]["blue"].asInt();
 
-	bool isMouse = cfg["osu"]["mouse"].asBool();
+    bool is_reload = false;
 
-	// here leftKeyValue and rightKeyValue holds value for the virtual key-codes
-	// http://nehe.gamedevice.net/article/msdn_virtualkey_codes/15009/ for reference
-	int leftKeyValue = cfg["osu"]["key1"].asInt();
-	int rightKeyValue = cfg["osu"]["key2"].asInt();
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+            if (event.type == sf::Event::Closed)
+                window.close();
+        window.clear(sf::Color(red_value, green_value, blue_value));
 
-	bool isLetterbox = cfg["resolution"]["letterboxing"].asBool();
-	double osuX = cfg["resolution"]["width"].asInt();
-	double osuY = cfg["resolution"]["height"].asInt();
-	double osuH = cfg["resolution"]["horizontalPosition"].asInt();
-	double osuV = cfg["resolution"]["verticalPosition"].asInt();
+        bool is_bongo = false;
 
-	int redValue = cfg["decoration"]["red"].asInt();
-	int greenValue = cfg["decoration"]["green"].asInt();
-	int blueValue = cfg["decoration"]["blue"].asInt();
-	bool isLeftHanded = cfg["decoration"]["leftHanded"].asBool();
-	bool rgbArm = cfg["decoration"]["rgbArm"].asBool();
-	double mouseDX = cfg["decoration"]["mouseXOffset"].asInt();
-	double mouseDY = cfg["decoration"]["mouseYOffset"].asInt();
-	double mouseScale = cfg["decoration"]["mouseScalar"].asInt();
-	double tabletDX = cfg["decoration"]["tabletXOffset"].asInt();
-	double tabletDY = cfg["decoration"]["tabletYOffset"].asInt();
-	double tabletScale = cfg["decoration"]["tabletScalar"].asInt();
+        handle = GetForegroundWindow();
+        if (handle)
+        {
+            TCHAR w_title[256];
+            GetWindowText(handle, w_title, GetWindowTextLength(handle));
+            std::string title = w_title;
+            is_bongo = (title.find("ESC") < 300);
+        }
 
-	bool isSwitch = false;
-	int keyState = 0;
-	bool leftKeyState = false;
-	bool rightKeyState = false;
-	double timerLeftKey = -1;
-	double timerRightKey = -1;
+        // ESCAPE for switching device
+        // A few suggestion here, instead of switching device, we can implement so that ESCAPE means reloading the config.json file
+        // Which is better for later on since I'm planning to support other game modes
+        if ((GetKeyState(VK_ESCAPE) & 0x8000) && is_bongo)
+        {
+            if (!is_reload)
+            {
+                data::init();
+                osu::init();
+            }
+            is_reload = true;
+        }
+        else
+            is_reload = false;
 
-	// loading textures
+        osu::draw();
 
-	sf::Texture bgTex;
-	if (isMouse)
-		loadTexture(bgTex, "img/osu/mousebg.png");
-	else
-		loadTexture(bgTex, "img/osu/tabletbg.png");
-	sf::Sprite bg(bgTex);
+        window.display();
+    }
 
-	sf::Texture upTex;
-	loadTexture(upTex, "img/osu/up.png");
-	sf::Sprite up(upTex);
-
-	sf::Texture leftTex;
-	loadTexture(leftTex, "img/osu/left.png");
-	sf::Sprite left(leftTex);
-
-	sf::Texture rightTex;
-	loadTexture(rightTex, "img/osu/right.png");
-	sf::Sprite right(rightTex);
-
-	sf::Texture deviceTex;
-	if (isMouse)
-		loadTexture(deviceTex, "img/osu/mouse.png");
-	else
-		loadTexture(deviceTex, "img/osu/tablet.png");
-	sf::Sprite device(deviceTex);
-
-	if (isMouse)
-		device.setScale(mouseScale, mouseScale);
-	else
-		device.setScale(tabletScale, tabletScale);
-
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
-			if (event.type == sf::Event::Closed)
-				window.close();
-
-		double letterX;
-		double letterY;
-		double sWidth;
-		double sHeight;
-
-		bool isBongo;
-
-		// getting resolution
-		HWND handle = GetForegroundWindow();
-		if (handle)
-		{
-			RECT oblong;
-			TCHAR WTitle[256];
-
-			GetWindowRect(handle, &oblong);
-			GetWindowText(handle, WTitle, GetWindowTextLength(handle));
-			std::string test = WTitle;
-			std::size_t index = test.find("osu!");
-			if (index < 300)
-			{
-				if (!isLetterbox)
-				{
-					sHeight = (oblong.bottom - oblong.top) * 0.8;
-					sWidth = sHeight * 4 / 3;
-					letterX = oblong.left + ((oblong.right - oblong.left) - sWidth) / 2;
-					letterY = oblong.top + sHeight / 0.8 * 0.117;
-				}
-				else
-				{
-					sHeight = osuY * 0.8;
-					sWidth = sHeight * 4 / 3;
-					double lll = (horizontal - osuX) * (osuH + 100) / 200;
-					double rrr = lll + osuX;
-					letterX = lll + ((rrr - lll) - sWidth) / 2;
-					letterY = (vertical - osuY) * (osuV + 100) / 200 + sHeight / 0.8 * 0.117;
-				}
-			}
-			else
-			{
-				sWidth = horizontal;
-				sHeight = vertical;
-				letterX = 0;
-				letterY = 0;
-			}
-			index = test.find("ESC");
-			if (index < 300)
-				isBongo = true;
-			else
-				isBongo = false;
-		}
-		else
-		{
-			isBongo = false;
-			sWidth = horizontal;
-			sHeight = vertical;
-			letterX = 0;
-			letterY = 0;
-		}
-
-		double x;
-		double y;
-		POINT point;
-		if (GetCursorPos(&point))
-		{
-			double fx = ((double)point.x - letterX) / sWidth;
-			if (isLeftHanded)
-				fx = 1 - fx;
-			double fy = ((double)point.y - letterY) / sHeight;
-			fx = std::min(fx, 1.0);
-			fx = std::max(fx, 0.0);
-			fy = std::min(fy, 1.0);
-			fy = std::max(fy, 0.0);
-			x = -97 * fx + 44 * fy + 184;
-			y = -76 * fx - 40 * fy + 324;
-		}
-
-		window.clear(sf::Color(redValue, greenValue, blueValue));
-		window.draw(bg);
-
-		// ESCAPE for switching device
-		// A few suggestion here, instead of switching device, we can implement so that ESCAPE means reloading the config.json file
-		// Which is better for later on since I'm planning to support other game modes
-		if ((GetKeyState(VK_ESCAPE) & 0x8000) && isBongo)
-		{
-			if (!isSwitch)
-			{
-				isMouse = !isMouse;
-				if (isMouse)
-				{
-					loadTexture(bgTex, "img/osu/mousebg.png");
-					loadTexture(deviceTex, "img/osu/mouse.png");
-					device.setScale(mouseScale, mouseScale);
-				}
-				else
-				{
-					loadTexture(bgTex, "img/osu/tabletbg.png");
-					loadTexture(deviceTex, "img/osu/tablet.png");
-					device.setScale(tabletScale, tabletScale);
-				}
-			}
-			isSwitch = true;
-		}
-		else
-			isSwitch = false;
-
-		// drawing keypresses
-		if (GetKeyState(leftKeyValue) & 0x8000)
-		{
-			if (!leftKeyState)
-			{
-				keyState = 1;
-				leftKeyState = true;
-			}
-		}
-		else
-			leftKeyState = false;
-
-		if (GetKeyState(rightKeyValue) & 0x8000)
-		{
-			if (!rightKeyState)
-			{
-				keyState = 2;
-				rightKeyState = true;
-			}
-		}
-		else
-			rightKeyState = false;
-		if (!leftKeyState && !rightKeyState)
-		{
-			keyState = 0;
-			window.draw(up);
-		}
-		if (keyState == 1)
-		{
-			if (clock() - 31 > timerRightKey)
-			{
-				window.draw(left);
-				timerLeftKey = clock();
-			}
-			else
-			{
-				window.draw(up);
-			}
-		}
-		else if (keyState == 2)
-		{
-			if (clock() - 31 > timerLeftKey)
-			{
-				window.draw(right);
-				timerRightKey = clock();
-			}
-			else
-			{
-				window.draw(up);
-			}
-		}
-
-		// initializing pss and pss2
-		int oof = 6;
-		std::vector<double> pss = {211.0, 159.0};
-		double dist = hypot(211 - x, 159 - y);
-		double centreleft0 = 211 - 0.7237 * dist / 2;
-		double centreleft1 = 159 + 0.69 * dist / 2;
-		for (double i = 1; i < oof; i++)
-		{
-			double p0;
-			double p1;
-			std::vector<double> bez = {211, 159, centreleft0, centreleft1, x, y};
-			std::tie(p0, p1) = bezier(i / oof, bez, 6);
-			pss.push_back(p0);
-			pss.push_back(p1);
-		}
-		pss.push_back(x);
-		pss.push_back(y);
-		double a = y - centreleft1;
-		double b = centreleft0 - x;
-		double le = hypot(a, b);
-		a = x + a / le * 60;
-		b = y + b / le * 60;
-		int a1 = 258;
-		int a2 = 228;
-		dist = hypot(a1 - a, a2 - b);
-		double centreright0 = a1 - 0.6 * dist / 2;
-		double centreright1 = a2 + 0.8 * dist / 2;
-		int push = 20;
-		double s = x - centreleft0;
-		double t = y - centreleft1;
-		le = hypot(s, t);
-		s *= push / le;
-		t *= push / le;
-		double s2 = a - centreright0;
-		double t2 = b - centreright1;
-		le = hypot(s2, t2);
-		s2 *= push / le;
-		t2 *= push / le;
-		for (double i = 1; i < oof; i++)
-		{
-			double p0;
-			double p1;
-			std::vector<double> bez = {x, y, x + s, y + t, a + s2, b + t2, a, b};
-			std::tie(p0, p1) = bezier(i / oof, bez, 8);
-			pss.push_back(p0);
-			pss.push_back(p1);
-		}
-		pss.push_back(a);
-		pss.push_back(b);
-		for (double i = oof - 1; i > 0; i--)
-		{
-			double p0;
-			double p1;
-			std::vector<double> bez = {1.0 * a1, 1.0 * a2, centreright0, centreright1, a, b};
-			std::tie(p0, p1) = bezier(i / oof, bez, 6);
-			pss.push_back(p0);
-			pss.push_back(p1);
-		}
-		pss.push_back(a1);
-		pss.push_back(a2);
-		double mpos0 = (a + x) / 2 - 52 - 15;
-		double mpos1 = (b + y) / 2 - 34 + 5;
-		double dx = -38;
-		double dy = -50;
-
-		const int iter = 25;
-
-		std::vector<double> pss2 = {pss[0] + dx, pss[1] + dy};
-		for (double i = 1; i < iter; i++)
-		{
-			double p0;
-			double p1;
-			std::tie(p0, p1) = bezier(i / iter, pss, 38);
-			pss2.push_back(p0 + dx);
-			pss2.push_back(p1 + dy);
-		}
-		pss2.push_back(pss[36] + dx);
-		pss2.push_back(pss[37] + dy);
-
-		if (isMouse)
-			device.setPosition(mpos0 + dx + mouseDX, mpos1 + dy + mouseDY);
-		else
-			device.setPosition(mpos0 + dx + tabletDX, mpos1 + dy + tabletDY);
-
-		// drawing mouse
-		if (isMouse)
-			window.draw(device);
-
-		// drawing arms
-		sf::VertexArray fill(sf::TriangleStrip, 26);
-		for (int i = 0; i < 26; i += 2)
-		{
-			fill[i].position = sf::Vector2f(pss2[i], pss2[i + 1]);
-			fill[i + 1].position = sf::Vector2f(pss2[52 - i - 2], pss2[52 - i - 1]);
-			if (rgbArm)
-			{
-				fill[i].color = sf::Color(redValue, greenValue, blueValue);
-				fill[i + 1].color = sf::Color(redValue, greenValue, blueValue);
-			}
-		}
-		window.draw(fill);
-
-		// drawing circ
-		int shad = 77;
-		sf::VertexArray edge(sf::TriangleStrip, 52);
-		double width = 7;
-		sf::CircleShape circ(width / 2);
-		circ.setFillColor(sf::Color(0, 0, 0, shad));
-		circ.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
-		window.draw(circ);
-		for (int i = 0; i < 50; i += 2)
-		{
-			double vec0 = pss2[i] - pss2[i + 2];
-			double vec1 = pss2[i + 1] - pss2[i + 3];
-			double dist = hypot(vec0, vec1);
-			edge[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
-			edge[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
-			edge[i].color = sf::Color(0, 0, 0, shad);
-			edge[i + 1].color = sf::Color(0, 0, 0, shad);
-			width -= 0.08;
-		}
-		double vec0 = pss2[50] - pss2[48];
-		double vec1 = pss2[51] - pss2[49];
-		dist = hypot(vec0, vec1);
-		edge[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
-		edge[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
-		edge[50].color = sf::Color(0, 0, 0, shad);
-		edge[51].color = sf::Color(0, 0, 0, shad);
-		window.draw(edge);
-		circ.setRadius(width / 2);
-		circ.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
-		window.draw(circ);
-
-		// drawing circ2
-		sf::VertexArray edge2(sf::TriangleStrip, 52);
-		width = 6;
-		sf::CircleShape circ2(width / 2);
-		circ2.setFillColor(sf::Color::Black);
-		circ2.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
-		window.draw(circ2);
-		for (int i = 0; i < 50; i += 2)
-		{
-			vec0 = pss2[i] - pss2[i + 2];
-			vec1 = pss2[i + 1] - pss2[i + 3];
-			double dist = hypot(vec0, vec1);
-			edge2[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
-			edge2[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
-			edge2[i].color = sf::Color::Black;
-			edge2[i + 1].color = sf::Color::Black;
-			width -= 0.08;
-		}
-		vec0 = pss2[50] - pss2[48];
-		vec1 = pss2[51] - pss2[49];
-		dist = hypot(vec0, vec1);
-		edge2[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
-		edge2[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
-		edge2[50].color = sf::Color::Black;
-		edge2[51].color = sf::Color::Black;
-		window.draw(edge2);
-		circ2.setRadius(width / 2);
-		circ2.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
-		window.draw(circ2);
-
-		// drawing tablet
-		if (!isMouse)
-			window.draw(device);
-
-		window.display();
-	}
-
-	return 0;
+    return 0;
 }
