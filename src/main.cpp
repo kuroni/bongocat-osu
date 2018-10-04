@@ -17,7 +17,7 @@ void create_config()
     {
         std::ofstream cfg("config.json");
         std::string s =
-"{\
+            "{\
     \"mode\": 1,\
     \"resolution\": {\
         \"letterboxing\": false,\
@@ -51,6 +51,12 @@ void create_config()
     }
 }
 
+void error_msg(std::string error, std::string title)
+{
+    MessageBoxA(NULL, error.c_str(), title.c_str(), MB_ICONERROR | MB_OK);
+    exit(0);
+}
+
 bool init()
 {
     create_config();
@@ -59,17 +65,23 @@ bool init()
     Json::CharReaderBuilder cfg_builder;
     Json::CharReader *cfg_reader = cfg_builder.newCharReader();
     if (!cfg_reader->parse(cfg_string.c_str(), cfg_string.c_str() + cfg_string.size(), &cfg, &error))
-    {
-        std::cout << "Error reading the config: " << error << std::endl;
-        return false;
-    }
-    
+        error_msg(error, "Error reading config.json");
+
     delete cfg_reader;
     cfg_file.close();
-
     img_holder.clear();
-    
-    osu::init();
+
+    int mode = data::cfg["mode"].asInt();
+
+    switch (mode)
+    {
+    case 1:
+        osu::init();
+        break;
+        // case 2: taiko::init(); break;
+        // case 3: catch::init(); break;
+        // case 4: mania::init(); break;
+    }
     return true;
 }
 
@@ -77,22 +89,18 @@ sf::Texture &load_texture(std::string path)
 {
     if (img_holder.find(path) == img_holder.end())
         if (!img_holder[path].loadFromFile(path))
-        {
-            // handle error here
-        }
+            error_msg("Cannot find file " + path, "Error importing images");
     return img_holder[path];
 }
 }; // namespace data
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-    window.create(sf::VideoMode(612, 352), "ESC for reloading configuration", sf::Style::Titlebar | sf::Style::Close);
-    window.setFramerateLimit(240);
+    window.create(sf::VideoMode(612, 352), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
+    // window.setFramerateLimit(240);
 
     // loading configs
-
-    if (data::init())
-        std::cout << "Reading config completed!\n";
+    data::init();
 
     int mode = data::cfg["mode"].asInt();
     int red_value = data::cfg["decoration"]["red"].asInt();
@@ -117,17 +125,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             TCHAR w_title[256];
             GetWindowText(handle, w_title, GetWindowTextLength(handle));
             std::string title = w_title;
-            is_bongo = (title.find("ESC") < 300);
+            is_bongo = (title.find("Bongo Cat for osu!") == 0);
         }
 
         // reloading config device
         if ((GetKeyState(VK_ESCAPE) & 0x8000) && is_bongo)
         {
             if (!is_reload)
-            {
                 data::init();
-                osu::init();
-            }
             is_reload = true;
         }
         else
@@ -135,7 +140,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
         switch (mode)
         {
-            case 1: osu::draw(); break;
+        case 1:
+            osu::draw();
+            break;
             // case 2: taiko::draw(); break;
             // case 3: catch::draw(); break;
             // case 4: mania::draw(); break;

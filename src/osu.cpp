@@ -88,7 +88,7 @@ void draw()
     double letter_x, letter_y, s_height, s_width;
     if (handle)
     {
-        if (title.find("osu!") < 300)
+        if (title.find("osu!") == 0)
         {
             RECT oblong;
             GetWindowRect(handle, &oblong);

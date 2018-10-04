@@ -24,8 +24,6 @@ namespace data
 {
 extern Json::Value cfg;
 
-void create_config();
-
 bool init();
 
 sf::Texture &load_texture(std::string path);
@@ -33,8 +31,6 @@ sf::Texture &load_texture(std::string path);
 
 namespace osu
 {
-std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length);
-
 void init();
 
 void draw();
