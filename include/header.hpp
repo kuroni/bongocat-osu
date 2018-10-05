@@ -1,5 +1,4 @@
-#ifndef HEADER_HPP
-#define HEADER_HPP
+#pragma once
 
 #include <iostream>
 #include <fstream>
@@ -36,4 +35,9 @@ void init();
 void draw();
 }; // namespace osu
 
-#endif // HEADER_HPP
+namespace ctb
+{
+void init();
+
+void draw();
+}; // namespace ctb

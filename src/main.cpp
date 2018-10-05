@@ -16,37 +16,42 @@ void create_config()
     if (!f.good())
     {
         std::ofstream cfg("config.json");
-        std::string s =
-            "{\
-    \"mode\": 1,\
-    \"resolution\": {\
-        \"letterboxing\": false,\
-        \"width\": 1920,\
-        \"height\": 1080,\
-        \"horizontalPosition\": 100,\
-        \"verticalPosition\": -100\
-    },\
-    \"decoration\": {\
-        \"red\": 255,\
-        \"green\": 255,\
-        \"blue\": 255,\
-        \"leftHanded\": false,\
-        \"offsetX\": [0, 11],\
-        \"offsetY\": [0, -65],\
-        \"scalar\": [1, 1]\
-    },\
-    \"osu\": {\
-        \"mouse\": false,\
-        \"key1\": 90,\
-        \"key2\": 88\
-    },\
-    \"taiko\": {\
-        \"keyLeftCentre\": 88,\
-        \"keyRightCentre\": 67,\
-        \"keyLeftRim\": 90,\
-        \"keyRightRim\": 86\
-    }\
-}";
+        const char *s =
+            R"V0G0N({
+    "mode": 1,
+    "resolution": {
+        "letterboxing": false,
+        "width": 1920,
+        "height": 1080,
+        "horizontalPosition": 100,
+        "verticalPosition": -100
+    },
+    "decoration": {
+        "red": 255,
+        "green": 255,
+        "blue": 255,
+        "leftHanded": false,
+        "offsetX": [0, 11],
+        "offsetY": [0, -65],
+        "scalar": [1, 1]
+    },
+    "osu": {
+        "mouse": true,
+        "key1": 90,
+        "key2": 88
+    },
+    "taiko": {
+        "leftCentre": 88,
+        "rightCentre": 67,
+        "leftRim": 90,
+        "rightRim": 86
+    },
+    "catch": {
+        "left": 37,
+        "right": 39,
+        "dash": 16
+    }
+})V0G0N";
         cfg << s;
     }
 }
@@ -81,8 +86,10 @@ bool init()
     case 1:
         osu::init();
         break;
-        // case 2: taiko::init(); break;
-        // case 3: catch::init(); break;
+    // case 2: taiko::init(); break;
+    case 3:
+        ctb::init();
+        break;
         // case 4: mania::init(); break;
     }
     return true;
@@ -100,7 +107,6 @@ sf::Texture &load_texture(std::string path)
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     window.create(sf::VideoMode(612, 352), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
-    // window.setFramerateLimit(240);
 
     // loading configs
     data::init();
@@ -146,8 +152,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         case 1:
             osu::draw();
             break;
-            // case 2: taiko::draw(); break;
-            // case 3: catch::draw(); break;
+        // case 2: taiko::draw(); break;
+        case 3:
+            ctb::draw();
+            break;
             // case 4: mania::draw(); break;
         }
 

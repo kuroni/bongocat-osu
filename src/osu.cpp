@@ -58,7 +58,8 @@ void init()
         offset_y = (data::cfg["decoration"]["offsetY"])[1].asInt();
         scale = (data::cfg["decoration"]["scalar"])[1].asInt();
     }
-    // reading sprites
+
+    // importing sprites
     up.setTexture(data::load_texture("img/osu/up.png"));
     left.setTexture(data::load_texture("img/osu/left.png"));
     right.setTexture(data::load_texture("img/osu/right.png"));
@@ -287,7 +288,7 @@ void draw()
     }
     window.draw(fill);
 
-    // drawing circ
+    // drawing first arm arm
     int shad = 77;
     sf::VertexArray edge(sf::TriangleStrip, 52);
     double width = 7;
@@ -318,7 +319,7 @@ void draw()
     circ.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
     window.draw(circ);
 
-    // drawing circ2
+    // drawing second arm arc
     sf::VertexArray edge2(sf::TriangleStrip, 52);
     width = 6;
     sf::CircleShape circ2(width / 2);
