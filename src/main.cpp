@@ -53,22 +53,25 @@ void create_config()
 
 void error_msg(std::string error, std::string title)
 {
-    MessageBoxA(NULL, error.c_str(), title.c_str(), MB_ICONERROR | MB_OK);
-    exit(0);
+    if (MessageBoxA(NULL, error.c_str(), title.c_str(), MB_ICONERROR | MB_RETRYCANCEL) == 2) // CANCEL or CLOSE
+        exit(0);
 }
 
 bool init()
 {
     create_config();
-    std::ifstream cfg_file("config.json", std::ifstream::binary);
-    std::string cfg_string((std::istreambuf_iterator<char>(cfg_file)), std::istreambuf_iterator<char>()), error;
-    Json::CharReaderBuilder cfg_builder;
-    Json::CharReader *cfg_reader = cfg_builder.newCharReader();
-    if (!cfg_reader->parse(cfg_string.c_str(), cfg_string.c_str() + cfg_string.size(), &cfg, &error))
-        error_msg(error, "Error reading config.json");
+    while (true)
+    {
+        std::ifstream cfg_file("config.json", std::ifstream::binary);
+        std::string cfg_string((std::istreambuf_iterator<char>(cfg_file)), std::istreambuf_iterator<char>()), error;
+        Json::CharReaderBuilder cfg_builder;
+        Json::CharReader *cfg_reader = cfg_builder.newCharReader();
+        if (!cfg_reader->parse(cfg_string.c_str(), cfg_string.c_str() + cfg_string.size(), &cfg, &error))
+            error_msg(error, "Error reading config.json");
+        else
+            break;
+    }
 
-    delete cfg_reader;
-    cfg_file.close();
     img_holder.clear();
 
     int mode = data::cfg["mode"].asInt();
@@ -88,7 +91,7 @@ bool init()
 sf::Texture &load_texture(std::string path)
 {
     if (img_holder.find(path) == img_holder.end())
-        if (!img_holder[path].loadFromFile(path))
+        while (!img_holder[path].loadFromFile(path))
             error_msg("Cannot find file " + path, "Error importing images");
     return img_holder[path];
 }
@@ -125,7 +128,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             TCHAR w_title[256];
             GetWindowText(handle, w_title, GetWindowTextLength(handle));
             std::string title = w_title;
-            is_bongo = (title.find("Bongo Cat for osu!") == 0);
+            is_bongo = (title.find("Bongo Cat for osu") == 0);
         }
 
         // reloading config device
