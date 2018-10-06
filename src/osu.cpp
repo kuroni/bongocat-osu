@@ -2,7 +2,7 @@
 
 namespace osu
 {
-int left_key_value, right_key_value;
+Json::Value left_key_value, right_key_value;
 int osu_x, osu_y, osu_h, osu_v;
 int offset_x, offset_y, scale;
 int horizontal, vertical;
@@ -32,12 +32,23 @@ std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int
     return std::make_tuple(xx / 1000, yy / 1000);
 }
 
-void init()
+bool init()
 {
     // getting configs
     is_mouse = data::cfg["osu"]["mouse"].asBool();
-    left_key_value = data::cfg["osu"]["key1"].asInt();
-    right_key_value = data::cfg["osu"]["key2"].asInt();
+
+    bool chk[256];
+    std::fill(chk, chk + 256, false);
+    left_key_value = data::cfg["osu"]["key1"];
+    for (Json::Value &v : left_key_value)
+        chk[v.asInt()] = true;
+    right_key_value = data::cfg["osu"]["key2"];
+    for (Json::Value &v : right_key_value)
+        if (chk[v.asInt()])
+        {
+            data::error_msg("Overlapping osu! keybinds", "Error reading configs");
+            return false;
+        }
 
     is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
     osu_x = data::cfg["resolution"]["width"].asInt();
@@ -81,6 +92,8 @@ void init()
     GetWindowRect(h_desktop, &desktop);
     horizontal = desktop.right;
     vertical = desktop.bottom;
+
+    return true;
 }
 
 void draw()
@@ -141,7 +154,14 @@ void draw()
     window.draw(bg);
 
     // drawing keypresses
-    if (GetKeyState(left_key_value) & 0x8000)
+    bool left_key = false;
+    for (Json::Value &v : left_key_value)
+        if (GetKeyState(v.asInt()) & 0x8000)
+        {
+            left_key = true;
+            break;
+        }
+    if (left_key)
     {
         if (!left_key_state)
         {
@@ -152,7 +172,14 @@ void draw()
     else
         left_key_state = false;
 
-    if (GetKeyState(right_key_value) & 0x8000)
+    bool right_key = false;
+    for (Json::Value &v : right_key_value)
+        if (GetKeyState(v.asInt()) & 0x8000)
+        {
+            right_key = true;
+            break;
+        }
+    if (right_key)
     {
         if (!right_key_state)
         {
@@ -162,6 +189,7 @@ void draw()
     }
     else
         right_key_state = false;
+
     if (!left_key_state && !right_key_state)
     {
         key_state = 0;
@@ -288,7 +316,7 @@ void draw()
     }
     window.draw(fill);
 
-    // drawing first arm arm
+    // drawing first arm arc
     int shad = 77;
     sf::VertexArray edge(sf::TriangleStrip, 52);
     double width = 7;

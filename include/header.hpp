@@ -23,6 +23,8 @@ namespace data
 {
 extern Json::Value cfg;
 
+void error_msg(std::string error, std::string title);
+
 bool init();
 
 sf::Texture &load_texture(std::string path);
@@ -30,14 +32,21 @@ sf::Texture &load_texture(std::string path);
 
 namespace osu
 {
-void init();
+bool init();
 
 void draw();
 }; // namespace osu
 
+namespace taiko
+{
+bool init();
+
+void draw();
+}; // namespace taiko
+
 namespace ctb
 {
-void init();
+bool init();
 
 void draw();
 }; // namespace ctb
