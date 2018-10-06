@@ -288,7 +288,7 @@ void draw()
     }
     window.draw(fill);
 
-    // drawing first arm arm
+    // drawing first arm arc
     int shad = 77;
     sf::VertexArray edge(sf::TriangleStrip, 52);
     double width = 7;
