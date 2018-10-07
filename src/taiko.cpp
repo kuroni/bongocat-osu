@@ -18,10 +18,10 @@ bool init()
 
     std::fill(chk, chk + 256, false);
     rim_key_value[0] = data::cfg["taiko"]["leftRim"];
-    for (Json::Value &v : rim_key_value)
+    for (Json::Value &v : rim_key_value[0])
         chk[v.asInt()] = true;
     centre_key_value[0] = data::cfg["taiko"]["leftCentre"];
-    for (Json::Value &v : centre_key_value)
+    for (Json::Value &v : centre_key_value[0])
         if (chk[v.asInt()])
         {
             data::error_msg("Overlapping osu!taiko keybinds", "Error reading configs");
@@ -30,10 +30,10 @@ bool init()
 
     std::fill(chk, chk + 256, false);
     rim_key_value[1] = data::cfg["taiko"]["rightRim"];
-    for (Json::Value &v : rim_key_value)
+    for (Json::Value &v : rim_key_value[1])
         chk[v.asInt()] = true;
     centre_key_value[1] = data::cfg["taiko"]["rightCentre"];
-    for (Json::Value &v : centre_key_value)
+    for (Json::Value &v : centre_key_value[1])
         if (chk[v.asInt()])
         {
             data::error_msg("Overlapping osu!taiko keybinds", "Error reading configs");
