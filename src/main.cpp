@@ -37,19 +37,19 @@ void create_config()
     },
     "osu": {
         "mouse": true,
-        "key1": 90,
-        "key2": 88
+        "key1": [90],
+        "key2": [88]
     },
     "taiko": {
-        "leftCentre": 88,
-        "rightCentre": 67,
-        "leftRim": 90,
-        "rightRim": 86
+        "leftCentre": [88],
+        "rightCentre": [67],
+        "leftRim": [90],
+        "rightRim": [86]
     },
     "catch": {
-        "left": 37,
-        "right": 39,
-        "dash": 16
+        "left": [37],
+        "right": [39],
+        "dash": [16]
     }
 })V0G0N";
         cfg << s;
@@ -72,7 +72,7 @@ bool init()
         Json::CharReaderBuilder cfg_builder;
         Json::CharReader *cfg_reader = cfg_builder.newCharReader();
         if (!cfg_reader->parse(cfg_string.c_str(), cfg_string.c_str() + cfg_string.size(), &cfg, &error))
-            error_msg(error, "Error reading config.json");
+            error_msg("Syntax error in config.json", "Error reading configs");
         else
             break;
     }
@@ -84,15 +84,15 @@ bool init()
     switch (mode)
     {
     case 1:
-        osu::init();
-        break;
-    // case 2: taiko::init(); break;
+        return osu::init();
+    // case 2: return taiko::init();
     case 3:
-        ctb::init();
-        break;
+        return ctb::init();
         // case 4: mania::init(); break;
+    default:
+        error_msg("Mode value is not correct", "Error reading configs");
+        return false;
     }
-    return true;
 }
 
 sf::Texture &load_texture(std::string path)
@@ -109,7 +109,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     window.create(sf::VideoMode(612, 352), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
 
     // loading configs
-    data::init();
+    while (!data::init())
+        continue;
 
     int mode = data::cfg["mode"].asInt();
     int red_value = data::cfg["decoration"]["red"].asInt();
@@ -141,7 +142,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         if ((GetKeyState(VK_ESCAPE) & 0x8000) && is_bongo)
         {
             if (!is_reload)
-                data::init();
+                while (!data::init())
+                    continue;
             is_reload = true;
         }
         else
