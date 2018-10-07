@@ -27,10 +27,8 @@ void create_config()
         "verticalPosition": -100
     },
     "decoration": {
-        "red": 255,
-        "green": 255,
-        "blue": 255,
         "leftHanded": false,
+        "rgb": [255, 255, 255],
         "offsetX": [0, 11],
         "offsetY": [0, -65],
         "scalar": [1, 1]
@@ -58,7 +56,7 @@ void create_config()
 
 void error_msg(std::string error, std::string title)
 {
-    if (MessageBoxA(NULL, error.c_str(), title.c_str(), MB_ICONERROR | MB_RETRYCANCEL) == 2) // CANCEL or CLOSE
+    if (MessageBoxA(NULL, error.c_str(), title.c_str(), MB_ICONERROR | MB_RETRYCANCEL) == IDCANCEL)
         exit(0);
 }
 
@@ -85,10 +83,13 @@ bool init()
     {
     case 1:
         return osu::init();
-    // case 2: return taiko::init();
-    case 3:
-        return ctb::init();
-        // case 4: mania::init(); break;
+    case 2:
+        return taiko::init();
+    // case 3:
+    //     return ctb::init();
+    // case 4:
+    //     mania::init();
+    //     break;
     default:
         error_msg("Mode value is not correct", "Error reading configs");
         return false;
@@ -113,9 +114,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         continue;
 
     int mode = data::cfg["mode"].asInt();
-    int red_value = data::cfg["decoration"]["red"].asInt();
-    int green_value = data::cfg["decoration"]["green"].asInt();
-    int blue_value = data::cfg["decoration"]["blue"].asInt();
+    int red_value = data::cfg["decoration"]["rgb"][0].asInt();
+    int green_value = data::cfg["decoration"]["rgb"][1].asInt();
+    int blue_value = data::cfg["decoration"]["rgb"][2].asInt();
 
     bool is_reload = false;
 
@@ -154,11 +155,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         case 1:
             osu::draw();
             break;
-        // case 2: taiko::draw(); break;
-        case 3:
-            ctb::draw();
+        case 2:
+            taiko::draw();
             break;
-            // case 4: mania::draw(); break;
+        // case 3:
+        //     ctb::draw();
+        //     break;
+        // case 4:
+        //     mania::draw();
+        //     break;
         }
 
         window.display();

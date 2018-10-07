@@ -18,10 +18,10 @@ bool init()
 
     std::fill(chk, chk + 256, false);
     rim_key_value[0] = data::cfg["taiko"]["leftRim"];
-    for (Json::Value &v : rim_key_value)
+    for (Json::Value &v : rim_key_value[0])
         chk[v.asInt()] = true;
     centre_key_value[0] = data::cfg["taiko"]["leftCentre"];
-    for (Json::Value &v : centre_key_value)
+    for (Json::Value &v : centre_key_value[0])
         if (chk[v.asInt()])
         {
             data::error_msg("Overlapping osu!taiko keybinds", "Error reading configs");
@@ -30,10 +30,10 @@ bool init()
 
     std::fill(chk, chk + 256, false);
     rim_key_value[1] = data::cfg["taiko"]["rightRim"];
-    for (Json::Value &v : rim_key_value)
+    for (Json::Value &v : rim_key_value[1])
         chk[v.asInt()] = true;
     centre_key_value[1] = data::cfg["taiko"]["rightCentre"];
-    for (Json::Value &v : centre_key_value)
+    for (Json::Value &v : centre_key_value[1])
         if (chk[v.asInt()])
         {
             data::error_msg("Overlapping osu!taiko keybinds", "Error reading configs");
@@ -42,10 +42,10 @@ bool init()
 
     // importing sprites
     bg.setTexture(data::load_texture("img/taiko/bg.png"));
-    up[0].setTexture(data::load_texture("img/taiko/upleft.png"));
+    up[0].setTexture(data::load_texture("img/taiko/leftup.png"));
     rim[0].setTexture(data::load_texture("img/taiko/leftrim.png"));
     centre[0].setTexture(data::load_texture("img/taiko/leftcentre.png"));
-    up[1].setTexture(data::load_texture("img/taiko/upright.png"));
+    up[1].setTexture(data::load_texture("img/taiko/rightup.png"));
     rim[1].setTexture(data::load_texture("img/taiko/rightrim.png"));
     centre[1].setTexture(data::load_texture("img/taiko/rightcentre.png"));
 
