@@ -18,6 +18,8 @@ Supported operating system:
 * Windows
 * Linux (tested with Arch Linux 4.18.9 with Wine 3.16)
 
+_Notice_: If you're using Wine on Linux, make sure that osu! and this application run in the same `WINEPREFIX`.
+
 ## Todo
 * Support other modes.
 * Optimize further for consistency and speed.
@@ -28,4 +30,4 @@ This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https
 
 Use these following flags to compile a standalone executable:
 
-`-lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic`
+`-DSFML_STATIC -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic`
