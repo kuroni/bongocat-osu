@@ -113,11 +113,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     while (!data::init())
         continue;
 
-    int mode = data::cfg["mode"].asInt();
-    int red_value = data::cfg["decoration"]["rgb"][0].asInt();
-    int green_value = data::cfg["decoration"]["rgb"][1].asInt();
-    int blue_value = data::cfg["decoration"]["rgb"][2].asInt();
-
     bool is_reload = false;
 
     while (window.isOpen())
@@ -126,7 +121,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         while (window.pollEvent(event))
             if (event.type == sf::Event::Closed)
                 window.close();
-        window.clear(sf::Color(red_value, green_value, blue_value));
 
         bool is_bongo = false;
 
@@ -150,6 +144,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         else
             is_reload = false;
 
+        int mode = data::cfg["mode"].asInt();
+        int red_value = data::cfg["decoration"]["rgb"][0].asInt();
+        int green_value = data::cfg["decoration"]["rgb"][1].asInt();
+        int blue_value = data::cfg["decoration"]["rgb"][2].asInt();
+
+        window.clear(sf::Color(red_value, green_value, blue_value));
         switch (mode)
         {
         case 1:
@@ -158,12 +158,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         case 2:
             taiko::draw();
             break;
-        // case 3:
-        //     ctb::draw();
-        //     break;
-        // case 4:
-        //     mania::draw();
-        //     break;
+            // case 3:
+            //     ctb::draw();
+            //     break;
+            // case 4:
+            //     mania::draw();
+            //     break;
         }
 
         window.display();
