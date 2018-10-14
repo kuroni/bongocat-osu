@@ -3,7 +3,7 @@
 namespace ctb
 {
 Json::Value left_key_value, right_key_value, dash_key_value;
-sf::Sprite bg, arrowup, left, right, dash, dashup;
+sf::Sprite bg, mid, left, right, dash, up;
 
 int key_state = 0;
 bool left_key_state = false;
@@ -30,11 +30,11 @@ bool init()
 
     // importing sprites
     bg.setTexture(data::load_texture("img/catch/bg.png"));
-    arrowup.setTexture(data::load_texture("img/catch/arrowup.png"));
+    mid.setTexture(data::load_texture("img/catch/mid.png"));
     left.setTexture(data::load_texture("img/catch/left.png"));
     right.setTexture(data::load_texture("img/catch/right.png"));
     dash.setTexture(data::load_texture("img/catch/dash.png"));
-    dashup.setTexture(data::load_texture("img/catch/dashup.png"));
+    up.setTexture(data::load_texture("img/catch/up.png"));
 
     return true;
 }
@@ -83,7 +83,7 @@ void draw()
     if (!left_key_state && !right_key_state)
     {
         key_state = 0;
-        window.draw(arrowup);
+        window.draw(mid);
     }
     if (key_state == 1)
     {
@@ -93,7 +93,7 @@ void draw()
             timer_left_key = clock();
         }
         else
-            window.draw(arrowup);
+            window.draw(mid);
     }
     else if (key_state == 2)
     {
@@ -103,7 +103,7 @@ void draw()
             timer_right_key = clock();
         }
         else
-            window.draw(arrowup);
+            window.draw(mid);
     }
 
     int is_dash = false;
@@ -115,6 +115,6 @@ void draw()
             break;
         }
     if (!is_dash)
-        window.draw(dashup);
+        window.draw(up);
 }
 }; // namespace ctb
