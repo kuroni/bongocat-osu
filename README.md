@@ -5,7 +5,7 @@ You can find how to configure the application in our [wiki](https://github.com/k
 
 Releases can be found [here](https://github.com/kuroni/bongocat-osu/releases).
 
-Any suggestion and/or collaboration is welcomed! Thank you!
+Any suggestion and/or collaboration, especially that relating to sprites, is welcomed! Thank you!
 
 [Original post](https://www.reddit.com/r/osugame/comments/9hrkte/i_know_bongo_cat_is_getting_old_but_heres_a_nicer/) by [u/Kuvster](https://github.com/Kuvster).
 
@@ -16,9 +16,9 @@ Press ESC to reload configuration and images (ESC will only reload configuration
 
 Supported operating system:
 * Windows
-* Linux (tested with Arch Linux 4.18.9 with Wine 3.16)
+* Linux (tested with Arch Linux 4.18.9 with WINE 3.16)
 
-_Notice_: If you're using Wine on Linux, make sure that osu! and this application run in the same `WINEPREFIX`.
+_Notice_: If you're using WINE on Linux, make sure that osu! and this application run in the same `WINEPREFIX`.
 
 ## Todo
 * Support other modes.

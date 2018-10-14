@@ -85,8 +85,8 @@ bool init()
         return osu::init();
     case 2:
         return taiko::init();
-    // case 3:
-    //     return ctb::init();
+    case 3:
+        return ctb::init();
     // case 4:
     //     mania::init();
     //     break;
@@ -158,12 +158,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         case 2:
             taiko::draw();
             break;
-            // case 3:
-            //     ctb::draw();
-            //     break;
-            // case 4:
-            //     mania::draw();
-            //     break;
+        case 3:
+            ctb::draw();
+            break;
+        // case 4:
+        //     mania::draw();
+        //     break;
         }
 
         window.display();
