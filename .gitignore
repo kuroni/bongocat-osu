@@ -32,5 +32,6 @@
 *.app
 
 # Project specific
-Makefile
 config.json
+.vscode
+Makefile

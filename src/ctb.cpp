@@ -3,7 +3,7 @@
 namespace ctb
 {
 Json::Value left_key_value, right_key_value, dash_key_value;
-sf::Sprite bg, up, left, right, dash;
+sf::Sprite bg, arrowup, left, right, dash, dashup;
 
 int key_state = 0;
 bool left_key_state = false;
@@ -30,10 +30,11 @@ bool init()
 
     // importing sprites
     bg.setTexture(data::load_texture("img/catch/bg.png"));
-    up.setTexture(data::load_texture("img/catch/up.png"));
+    arrowup.setTexture(data::load_texture("img/catch/arrowup.png"));
     left.setTexture(data::load_texture("img/catch/left.png"));
     right.setTexture(data::load_texture("img/catch/right.png"));
     dash.setTexture(data::load_texture("img/catch/dash.png"));
+    dashup.setTexture(data::load_texture("img/catch/dashup.png"));
 
     return true;
 }
@@ -82,7 +83,7 @@ void draw()
     if (!left_key_state && !right_key_state)
     {
         key_state = 0;
-        window.draw(up);
+        window.draw(arrowup);
     }
     if (key_state == 1)
     {
@@ -92,7 +93,7 @@ void draw()
             timer_left_key = clock();
         }
         else
-            window.draw(up);
+            window.draw(arrowup);
     }
     else if (key_state == 2)
     {
@@ -102,14 +103,18 @@ void draw()
             timer_right_key = clock();
         }
         else
-            window.draw(up);
+            window.draw(arrowup);
     }
 
+    int is_dash = false;
     for (Json::Value &v : dash_key_value)
         if (GetKeyState(v.asInt()) & 0x8000)
         {
             window.draw(dash);
+            is_dash = true;
             break;
         }
+    if (!is_dash)
+        window.draw(dashup);
 }
 }; // namespace ctb
