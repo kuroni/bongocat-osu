@@ -2,12 +2,12 @@
 
 namespace osu
 {
-Json::Value left_key_value, right_key_value;
+Json::Value left_key_value, right_key_value, smoke_key_value;
 int osu_x, osu_y, osu_h, osu_v;
 int offset_x, offset_y, scale;
 int horizontal, vertical;
-bool is_mouse, is_letterbox, is_left_handed;
-sf::Sprite bg, up, left, right, device;
+bool is_mouse, is_letterbox, is_left_handed, is_smoke;
+sf::Sprite bg, up, left, right, device, smoke;
 
 int key_state = 0;
 bool left_key_state = false;
@@ -49,6 +49,12 @@ bool init()
             data::error_msg("Overlapping osu! keybinds", "Error reading configs");
             return false;
         }
+    
+    if (data::cfg["osu"].isMember("smoke"))
+    {
+        is_smoke = true;
+        smoke_key_value = data::cfg["osu"]["smoke"];
+    }
 
     is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
     osu_x = data::cfg["resolution"]["width"].asInt();
@@ -84,6 +90,8 @@ bool init()
         bg.setTexture(data::load_texture("img/osu/tabletbg.png"));
         device.setTexture(data::load_texture("img/osu/tablet.png"), true);
     }
+    if (is_smoke)
+        smoke.setTexture(data::load_texture("img/osu/smoke.png"));
     device.setScale(scale, scale);
 
     // getting resolution
@@ -221,6 +229,13 @@ void draw()
         else
             window.draw(up);
     }
+
+    for (Json::Value &v : smoke_key_value)
+        if (GetKeyState(v.asInt()) & 0x8000)
+        {
+            window.draw(smoke);
+            break;
+        }
 
     // initializing pss and pss2 (kuvster's magic)
     int oof = 6;

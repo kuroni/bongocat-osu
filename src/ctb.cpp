@@ -106,7 +106,7 @@ void draw()
             window.draw(mid);
     }
 
-    int is_dash = false;
+    bool is_dash = false;
     for (Json::Value &v : dash_key_value)
         if (GetKeyState(v.asInt()) & 0x8000)
         {
