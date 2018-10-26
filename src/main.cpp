@@ -36,7 +36,8 @@ void create_config()
     "osu": {
         "mouse": true,
         "key1": [90],
-        "key2": [88]
+        "key2": [88],
+        "smoke": [67]
     },
     "taiko": {
         "leftCentre": [88],
