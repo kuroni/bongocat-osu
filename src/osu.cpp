@@ -390,7 +390,7 @@ void draw()
     }
     if (key_state == 1)
     {
-        if ((clock() - timer_right_key) / CLOCKS_PER_SEC > 0.031)
+        if ((clock() - std::max(timer_right_key, timer_wave_key)) / CLOCKS_PER_SEC > 0.031)
         {
             if (!is_left_handed)
                 window.draw(left);
@@ -403,7 +403,7 @@ void draw()
     }
     else if (key_state == 2)
     {
-        if ((clock() - timer_left_key) / CLOCKS_PER_SEC > 0.031)
+        if ((clock() - std::max(timer_left_key, timer_wave_key)) / CLOCKS_PER_SEC > 0.031)
         {
             if (!is_left_handed)
                 window.draw(right);
@@ -416,11 +416,8 @@ void draw()
     }
     else if (key_state == 3)
     {
-        if ((clock() - timer_wave_key) / CLOCKS_PER_SEC > 0.031)
+        if ((clock() - std::max(timer_left_key, timer_right_key)) / CLOCKS_PER_SEC > 0.031)
         {
-//          if (!is_left_handed)        I don't see how this would be needed for it to wave
-//              window.draw(right);
-//          else
             window.draw(wave);
             timer_wave_key = clock();
         }
