@@ -28,7 +28,8 @@ void create_config()
         "mouse": true,
         "key1": [90],
         "key2": [88],
-        "smoke": [67]
+        "smoke": [67],
+        "wave": [86]
     },
     "taiko": {
         "leftCentre": [88],
