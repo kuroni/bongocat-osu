@@ -2,18 +2,20 @@
 
 namespace osu
 {
-Json::Value left_key_value, right_key_value, smoke_key_value;
+Json::Value left_key_value, right_key_value, smoke_key_value, wave_key_value;
 int osu_x, osu_y, osu_h, osu_v;
 int offset_x, offset_y, scale;
 int horizontal, vertical;
 bool is_mouse, is_letterbox, is_left_handed;
-sf::Sprite bg, up, left, right, device, smoke;
+sf::Sprite bg, up, left, right, device, smoke, wave;
 
 int key_state = 0;
 bool left_key_state = false;
 bool right_key_state = false;
+bool wave_key_state = false;
 double timer_left_key = -1;
 double timer_right_key = -1;
+double timer_wave_key = -1;
 
 std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length)
 {
@@ -49,6 +51,13 @@ bool init()
             data::error_msg("Overlapping osu! keybinds", "Error reading configs");
             return false;
         }
+    wave_key_value = data::cfg["osu"]["wave"];
+    for (Json::Value &v : wave_key_value)
+        if (chk[v.asInt()])
+        {
+            data::error_msg("Overlapping osu! keybinds", "Error reading configs");
+            return false;
+        }
     smoke_key_value = data::cfg["osu"]["smoke"];
 
     is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
@@ -75,6 +84,7 @@ bool init()
     up.setTexture(data::load_texture("img/osu/up.png"));
     left.setTexture(data::load_texture("img/osu/left.png"));
     right.setTexture(data::load_texture("img/osu/right.png"));
+    wave.setTexture(data::load_texture("img/osu/wave.png"));
     if (is_mouse)
     {
         bg.setTexture(data::load_texture("img/osu/mousebg.png"));
@@ -354,8 +364,26 @@ void draw()
     }
     else
         right_key_state = false;
+    
+    bool wave_key = false;
+    for (Json::Value &v : wave_key_value)
+        if (GetKeyState(v.asInt()) & 0x8000)
+        {
+            wave_key = true;
+            break;
+        }
+    if (wave_key)
+    {
+        if (!wave_key_state)
+        {
+            key_state = 3;
+            wave_key_state = true;
+        }
+    }
+    else
+        wave_key_state = false;
 
-    if (!left_key_state && !right_key_state)
+    if (!left_key_state && !right_key_state && !wave_key_state)
     {
         key_state = 0;
         window.draw(up);
@@ -382,6 +410,19 @@ void draw()
             else
                 window.draw(left);
             timer_right_key = clock();
+        }
+        else
+            window.draw(up);
+    }
+    else if (key_state == 3)
+    {
+        if ((clock() - timer_wave_key) / CLOCKS_PER_SEC > 0.031)
+        {
+//          if (!is_left_handed)        I don't see how this would be needed for it to wave
+//              window.draw(right);
+//          else
+            window.draw(wave);
+            timer_wave_key = clock();
         }
         else
             window.draw(up);
