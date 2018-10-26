@@ -10,6 +10,7 @@
 #include <time.h>
 #include <windows.h>
 #include <math.h>
+#include <string.h>
 
 #include <SFML/Graphics.hpp>
 #include "json/json.h"
