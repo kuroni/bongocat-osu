@@ -1,7 +1,3 @@
-*.rc
 *.res
 *.exe
 *.o
-config.json
-.vscode
-Makefile

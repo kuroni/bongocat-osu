@@ -1,7 +1,7 @@
 # Description
 An osu! Bongo Cat overlay with smooth paw movement and simple skinning ability, written in C++.
 
-You can find how to configure the application in our [wiki](https://github.com/kuroni/bongocat-osu/wiki/Configuration).
+You can find how to configure the application in our [wiki](https://github.com/kuroni/bongocat-osu/wiki/Settings).
 
 Releases can be found [here](https://github.com/kuroni/bongocat-osu/releases).
 
@@ -26,8 +26,19 @@ _Notice_: If you're using WINE on Linux, make sure that osu! and this applicatio
 * Allow even more customizations.
 
 ## For developers
-This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https://github.com/open-source-parsers/jsoncpp). JsonCpp libraries are directly included in the source.
+This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https://github.com/open-source-parsers/jsoncpp). JsonCpp libraries are directly included in the source using the provided `amalgamation.py` from the developers.
 
-Use these following flags to compile a standalone executable:
+To build the source, download the SFML libraries, replace *`<SFML-folder>`* in `Makefile` with the desired folder, and run these commands from the base directory:
 
-`-DSFML_STATIC -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic`
+```
+mkdir bin
+make
+```
+
+To test the program run this from the base directory:
+
+```
+make test
+```
+
+Alternatively, you can copy the newly-compiled `bin/bongocat.exe` into the base directory and execute it.
