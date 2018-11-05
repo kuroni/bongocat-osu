@@ -26,6 +26,7 @@ void create_config()
     },
     "osu": {
         "mouse": true,
+        "armColor": false,
         "key1": [90],
         "key2": [88],
         "smoke": [67],
@@ -41,6 +42,15 @@ void create_config()
         "left": [37],
         "right": [39],
         "dash": [16]
+    },
+    "mania": {
+        "key": [68, 70, 74, 75].
+        "color": [
+            [0, 0, 255],
+            [255, 0, 0],
+            [255, 0, 0],
+            [0, 0, 255]
+        ]
     }
 })V0G0N";
     std::string error;
@@ -94,7 +104,7 @@ bool init()
         Json::CharReader *cfg_reader = cfg_builder.newCharReader();
         Json::Value cfg_read;
         if (!cfg_reader->parse(cfg_string.c_str(), cfg_string.c_str() + cfg_string.size(), &cfg_read, &error))
-            error_msg("Syntax error in config.json", "Error reading configs");
+            error_msg("Syntax error in config.json:\n" + error, "Error reading configs");
         else if (update(cfg, cfg_read))
             break;
     }
@@ -111,8 +121,8 @@ bool init()
         return taiko::init();
     case 3:
         return ctb::init();
-    // case 4:
-    //     return mania::init();
+    case 4:
+        return mania::init();
     default:
         error_msg("Mode value is not correct", "Error reading configs");
         return false;

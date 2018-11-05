@@ -61,9 +61,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         case 3:
             ctb::draw();
             break;
-        // case 4:
-        //     mania::draw();
-        //     break;
+        case 4:
+            mania::draw();
+            break;
         }
 
         window.display();

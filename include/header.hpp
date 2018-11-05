@@ -51,3 +51,10 @@ bool init();
 
 void draw();
 }; // namespace ctb
+
+namespace mania
+{
+bool init();
+
+void draw();
+}; // namespace mania
