@@ -8,6 +8,7 @@ std::string title;
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
     window.create(sf::VideoMode(612, 352), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
+    window.setVerticalSyncEnabled(true);
 
     // loading configs
     while (!data::init())
