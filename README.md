@@ -12,7 +12,7 @@ Any suggestion and/or collaboration, especially that relating to sprites, is wel
 ## Further information
 In order to play with fullscreen on Windows 10, run both osu! and this application in Windows 7 compability mode.
 
-Press ESC to reload configuration and images (ESC will only reload configurations when the window is focused).
+Press Ctrl + R to reload configuration and images (will only reload configurations when the window is focused).
 
 Supported operating system:
 * Windows
