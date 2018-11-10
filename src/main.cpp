@@ -1,9 +1,6 @@
 #include "header.hpp"
 
 sf::RenderWindow window;
-HWND handle;
-TCHAR w_title[256];
-std::string title;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
