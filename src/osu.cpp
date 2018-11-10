@@ -112,8 +112,13 @@ void draw()
 {
     // getting device resolution
     double letter_x, letter_y, s_height, s_width;
+
+    HWND handle = GetForegroundWindow();
     if (handle)
     {
+        TCHAR w_title[256];
+        GetWindowText(handle, w_title, GetWindowTextLength(handle));
+        std::string title = w_title;
         if (title.find("osu!") == 0)
         {
             RECT oblong;

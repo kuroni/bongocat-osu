@@ -26,7 +26,6 @@ void create_config()
     },
     "osu": {
         "mouse": true,
-        "armColor": false,
         "key1": [90],
         "key2": [88],
         "smoke": [67],

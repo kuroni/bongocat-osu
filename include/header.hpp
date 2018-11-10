@@ -16,9 +16,6 @@
 #include "json/json.h"
 
 extern sf::RenderWindow window;
-extern HWND handle;
-extern TCHAR w_title[256];
-extern std::string title;
 
 namespace data
 {

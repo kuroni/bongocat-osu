@@ -19,30 +19,25 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     {
         sf::Event event;
         while (window.pollEvent(event))
-            if (event.type == sf::Event::Closed)
+            switch (event.type)
+            {
+            case sf::Event::Closed:
                 window.close();
+                break;
 
-        bool is_bongo = false;
-
-        handle = GetForegroundWindow();
-        if (handle)
-        {
-            TCHAR w_title[256];
-            GetWindowText(handle, w_title, GetWindowTextLength(handle));
-            std::string title = w_title;
-            is_bongo = (title.find("Bongo Cat for osu") == 0);
-        }
-
-        // reloading config device
-        if ((GetKeyState(VK_ESCAPE) & 0x8000) && is_bongo)
-        {
-            if (!is_reload)
-                while (!data::init())
-                    continue;
-            is_reload = true;
-        }
-        else
-            is_reload = false;
+            // get reload config prompt
+            case sf::Event::KeyPressed:
+                if (event.key.code == sf::Keyboard::R && event.key.control)
+                {
+                    if (!is_reload)
+                        while (!data::init())
+                            continue;
+                    is_reload = true;
+                    break;
+                }
+            default:
+                is_reload = false;
+            }
 
         int mode = data::cfg["mode"].asInt();
         int red_value = data::cfg["decoration"]["rgb"][0].asInt();
