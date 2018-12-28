@@ -43,7 +43,9 @@ void create_config()
         "dash": [16]
     },
     "mania": {
-        "key": [68, 70, 74, 75]
+        "4K": true,
+        "key4K": [68, 70, 74, 75],
+        "key7K": [83, 68, 70, 32, 74, 75, 76]
     }
 })V0G0N";
     std::string error;
