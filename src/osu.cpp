@@ -4,8 +4,9 @@ namespace osu
 {
 Json::Value left_key_value, right_key_value, smoke_key_value, wave_key_value;
 int osu_x, osu_y, osu_h, osu_v;
-int offset_x, offset_y, scale;
+int offset_x, offset_y;
 int horizontal, vertical;
+double scale;
 bool is_mouse, is_letterbox, is_left_handed;
 sf::Sprite bg, up, left, right, device, smoke, wave;
 
@@ -71,13 +72,13 @@ bool init()
     {
         offset_x = (data::cfg["decoration"]["offsetX"])[0].asInt();
         offset_y = (data::cfg["decoration"]["offsetY"])[0].asInt();
-        scale = (data::cfg["decoration"]["scalar"])[0].asInt();
+        scale = (data::cfg["decoration"]["scalar"])[0].asDouble();
     }
     else
     {
         offset_x = (data::cfg["decoration"]["offsetX"])[1].asInt();
         offset_y = (data::cfg["decoration"]["offsetY"])[1].asInt();
-        scale = (data::cfg["decoration"]["scalar"])[1].asInt();
+        scale = (data::cfg["decoration"]["scalar"])[1].asDouble();
     }
 
     // importing sprites

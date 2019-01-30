@@ -22,7 +22,7 @@ void create_config()
         "rgb": [255, 255, 255],
         "offsetX": [0, 11],
         "offsetY": [0, -65],
-        "scalar": [1, 1]
+        "scalar": [1.0, 1.0]
     },
     "osu": {
         "mouse": true,
