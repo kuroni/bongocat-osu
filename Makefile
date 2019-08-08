@@ -8,8 +8,8 @@ OBJ := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
 ICO := $(ICODIR)/ico.res
 CXXFLAGS := -std=c++17 -s -O2 -mwindows
 LDFLAGS := -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
-INCFLAGS := -I/home/kuroni/Documents/Repositories/external_lib/SFML-2.5.0-1/include -Iinclude
-LIBFLAGS := -L/home/kuroni/Documents/Repositories/external_lib/SFML-2.5.0-1/lib
+INCFLAGS := -I/home/kuroni/Documents/Repositories/external_lib/SFML-2.5.1-32bit/include -Iinclude
+LIBFLAGS := -L/home/kuroni/Documents/Repositories/external_lib/SFML-2.5.1-32bit/lib
 DEFINES := -DSFML_STATIC
 
 .PHONY: test clean
