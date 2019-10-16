@@ -158,6 +158,10 @@ void draw()
     POINT point;
     if (GetCursorPos(&point))
     {
+        if (!is_letterbox){
+            letter_x = floor((double)point.x / osu_x) * osu_x;
+            letter_y = floor((double)point.y / osu_y) * osu_y;
+        }
         double fx = ((double)point.x - letter_x) / s_width;
         if (is_left_handed)
             fx = 1 - fx;
