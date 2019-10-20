@@ -1,3 +1,4 @@
 *.res
 *.exe
 *.o
+Makefile
