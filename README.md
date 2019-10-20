@@ -28,7 +28,7 @@ _Notice_: If you're using WINE on Linux, make sure that osu! and this applicatio
 ## For developers
 This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https://github.com/open-source-parsers/jsoncpp). JsonCpp libraries are directly included in the source using the provided `amalgamation.py` from the developers.
 
-To build the source, download the SFML libraries, replace *`<SFML-folder>`* in `Makefile` with the desired folder, and run these commands from the base directory:
+To build the source, download the SFML libraries, duplicate `Makefile.demo` to `Makefile`, then replace *`<SFML-folder>`* in `Makefile` with the desired folder, and run these commands from the base directory:
 
 ```
 mkdir bin
