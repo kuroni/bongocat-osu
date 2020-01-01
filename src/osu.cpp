@@ -6,6 +6,7 @@ Json::Value left_key_value, right_key_value, smoke_key_value, wave_key_value;
 int osu_x, osu_y, osu_h, osu_v;
 int offset_x, offset_y;
 int horizontal, vertical;
+int paw_r, paw_g, paw_b;
 double scale;
 bool is_mouse, is_letterbox, is_left_handed;
 sf::Sprite bg, up, left, right, device, smoke, wave;
@@ -39,6 +40,10 @@ bool init()
 {
     // getting configs
     is_mouse = data::cfg["osu"]["mouse"].asBool();
+
+    paw_r = data::cfg["osu"]["paw"][0].asInt();
+    paw_g = data::cfg["osu"]["paw"][1].asInt();
+    paw_b = data::cfg["osu"]["paw"][2].asInt();
 
     bool chk[256];
     std::fill(chk, chk + 256, false);
@@ -266,6 +271,8 @@ void draw()
     {
         fill[i].position = sf::Vector2f(pss2[i], pss2[i + 1]);
         fill[i + 1].position = sf::Vector2f(pss2[52 - i - 2], pss2[52 - i - 1]);
+        fill[i].color = sf::Color(paw_r, paw_g, paw_b, 255);
+        fill[i + 1].color = sf::Color(paw_r, paw_g, paw_b, 255);
     }
     window.draw(fill);
 
