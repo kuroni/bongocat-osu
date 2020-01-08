@@ -29,7 +29,9 @@ void create_config()
         "key1": [90],
         "key2": [88],
         "smoke": [67],
-        "wave": [86]
+        "wave": [86],
+        "key3":[66],
+        "key4":[78]
     },
     "taiko": {
         "leftCentre": [88],
@@ -46,7 +48,11 @@ void create_config()
         "4K": true,
         "key4K": [68, 70, 74, 75],
         "key7K": [83, 68, 70, 32, 74, 75, 76]
-    }
+    },
+	"mouse":{
+        "key1": [1,2],
+        "smoke": [186]
+
 })V0G0N";
     std::string error;
     Json::CharReaderBuilder cfg_builder;
@@ -118,6 +124,8 @@ bool init()
         return ctb::init();
     case 4:
         return mania::init();
+	case 5:
+		return mouse::init();
     default:
         error_msg("Mode value is not correct", "Error reading configs");
         return false;

@@ -1,5 +1,6 @@
 #include "header.hpp"
 
+
 sf::RenderWindow window;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -68,6 +69,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         case 4:
             mania::draw();
             break;
+		case 5:
+			mouse::draw();
+			break;
         }
 
         window.display();

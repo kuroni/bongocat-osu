@@ -55,3 +55,10 @@ bool init();
 
 void draw();
 }; // namespace mania
+
+namespace mouse
+{
+	bool init();
+
+	void draw();
+}; // namespace mouse
