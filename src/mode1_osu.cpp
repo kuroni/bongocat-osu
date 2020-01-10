@@ -41,15 +41,25 @@ void getarm();
 */
 namespace osu
 {
-Json::Value left_key_value, right_key_value, smoke_key_value, wave_key_value, key3_value, key4_value;
+Json::Value left_key_value, 
+			right_key_value, 
+			smoke_key_value, 
+			wave_key_value, 
+			key3_value, 
+			key4_value,
+			stopemoticon_value, 
+			mouse_leftkey_value, 
+			mouse_rightkey_value;
 int osu_x, osu_y, osu_h, osu_v;
 int offset_x, offset_y;
 int horizontal, vertical;
 double scale;
-bool is_mouse, is_letterbox, is_left_handed;
-sf::Sprite bg, up, left, right, device, smoke, wave,key3,key4;
+bool is_mouse, is_letterbox, is_left_handed,is_emoticonkeep;
+sf::Sprite bg, up, left, right, device, smoke, wave,key3,key4, mouse_left, mouse_right;
 
 int key_state = 0;
+int mouse_state=0;
+
 bool left_key_state = false;
 bool right_key_state = false;
 bool wave_key_state = false;
@@ -57,6 +67,9 @@ bool wave_key_state = false;
 bool key3_state = false;
 bool key4_state = false;
 
+
+
+bool is_smoke = false;
 
 double timer_left_key = -1;
 double timer_right_key = -1;
@@ -66,11 +79,8 @@ double timeer_key3_key = -1;
 double timeer_key4_key = -1;
 
 
-sf::Image atex;
 
 
-
-sf::RenderStates armTex;
 sf::Texture atextex;
 
 
@@ -96,7 +106,10 @@ std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int
 }
 
 
-
+//arm lines color
+int red_value;
+int green_value;
+int blue_value;
 
 
 
@@ -113,8 +126,9 @@ bool init()
 	armTex.texture = &atextex;
 	*/
 
-
-
+	red_value = data::cfg["addition"]["armLineColor"][0].asInt();
+	green_value = data::cfg["addition"]["armLineColor"][1].asInt();
+	blue_value = data::cfg["addition"]["armLineColor"][2].asInt();
 
 
 
@@ -122,10 +136,25 @@ bool init()
 
     // getting configs
     is_mouse = data::cfg["osu"]["mouse"].asBool();
+	is_emoticonkeep = data::cfg["addition"]["emoticonKeep"].asBool();
+
+
+	if (!atextex.loadFromFile("img/osu/arm.png"))
+	{
+		data::error_msg("File not successfully loaded", "Error loading files");
+	}
+
 
     bool chk[256];
     std::fill(chk, chk + 256, false);
 
+
+	mouse_leftkey_value = data::cfg["osu"]["mouse_left"];
+	for (Json::Value& v : mouse_leftkey_value)
+		chk[v.asInt()] = true;
+	mouse_rightkey_value = data::cfg["osu"]["mouse_right"];
+	for (Json::Value& v : mouse_rightkey_value)
+		chk[v.asInt()] = true;
 
     left_key_value = data::cfg["osu"]["key1"];
     for (Json::Value &v : left_key_value)
@@ -168,6 +197,8 @@ bool init()
 
 
     smoke_key_value = data::cfg["osu"]["smoke"];
+	stopemoticon_value = data::cfg["addition"]["emoticonClear"];
+
 
     is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
     osu_x = data::cfg["resolution"]["width"].asInt();
@@ -206,15 +237,20 @@ bool init()
     {
         bg.setTexture(data::load_texture("img/osu/mousebg.png"));
         device.setTexture(data::load_texture("img/osu/mouse.png"), true);
+		mouse_left.setTexture(data::load_texture("img/osu/mouse_left.png"), true);
+		mouse_right.setTexture(data::load_texture("img/osu/mouse_right.png"), true);
     }
     else
     {
         bg.setTexture(data::load_texture("img/osu/tabletbg.png"));
         device.setTexture(data::load_texture("img/osu/tablet.png"), true);
+		mouse_left.setTexture(data::load_texture("img/osu/tablet_left.png"), true);
+		mouse_right.setTexture(data::load_texture("img/osu/tablet_right.png"), true);
     }
     smoke.setTexture(data::load_texture("img/osu/smoke.png"));
     device.setScale(scale, scale);
-
+	mouse_left.setScale(scale, scale);
+	mouse_right.setScale(scale, scale);
     // getting resolution
     RECT desktop;
     const HWND h_desktop = GetDesktopWindow();
@@ -368,98 +404,140 @@ void draw()
     pss2.push_back(pss[37] + dy);
 
     device.setPosition(mpos0 + dx + offset_x, mpos1 + dy + offset_y);
+	mouse_left.setPosition(mpos0 + dx + offset_x, mpos1 + dy + offset_y);
+	mouse_right.setPosition(mpos0 + dx + offset_x, mpos1 + dy + offset_y);
+
+
+
 
     // drawing mouse
-    if (is_mouse)
-        window.draw(device);
+	if (is_mouse) {
+		window.draw(device);
+		for (Json::Value& v : mouse_leftkey_value)
+			if (GetKeyState(v.asInt()) & 0x8000)
+			{
+				window.draw(mouse_left);
+				break;
+			}
+		for (Json::Value& v : mouse_rightkey_value)
+			if (GetKeyState(v.asInt()) & 0x8000)
+			{
+				window.draw(mouse_right);
+				break;
+			}
+	}
 
     // drawing arms
-    sf::VertexArray fill(sf::TriangleStrip, 26);
-    for (int i = 0; i < 26; i += 2)
-    {
-        fill[i].position = sf::Vector2f(pss2[i], pss2[i + 1]);
-        fill[i + 1].position = sf::Vector2f(pss2[52 - i - 2], pss2[52 - i - 1]);
-    }
+	sf::ConvexShape fill(26);
+	for (int i = 0; i < 26; i++)
+	{
+		fill.setPoint(i, sf::Vector2f(pss2[i * 2], pss2[i * 2 + 1]));
+	}
+	fill.setTexture(&atextex);
+	window.draw(fill);
 
 
 
-
-
-    window.draw(fill,armTex);
 
     // drawing first arm arc
-    int shad = 77;
-    sf::VertexArray edge(sf::TriangleStrip, 52);
-    double width = 7;
-    sf::CircleShape circ(width / 2);
-    circ.setFillColor(sf::Color(0, 0, 0, shad));
-    circ.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
-    window.draw(circ);
-    for (int i = 0; i < 50; i += 2)
-    {
-        double vec0 = pss2[i] - pss2[i + 2];
-        double vec1 = pss2[i + 1] - pss2[i + 3];
-        double dist = hypot(vec0, vec1);
-        edge[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
-        edge[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
-        edge[i].color = sf::Color(0, 0, 0, shad);
-        edge[i + 1].color = sf::Color(0, 0, 0, shad);
-        width -= 0.08;
-    }
-    double vec0 = pss2[50] - pss2[48];
-    double vec1 = pss2[51] - pss2[49];
-    dist = hypot(vec0, vec1);
-    edge[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
-    edge[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
-    edge[50].color = sf::Color(0, 0, 0, shad);
-    edge[51].color = sf::Color(0, 0, 0, shad);
-    window.draw(edge);
-    circ.setRadius(width / 2);
-    circ.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
-    window.draw(circ);
+	int shad = 77;
+	sf::VertexArray edge(sf::TriangleStrip, 52);
+	double width = 7;
+	sf::CircleShape circ(width / 2);
+	circ.setFillColor(sf::Color(red_value, green_value, blue_value, shad));
+	circ.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
 
-    // drawing second arm arc
-    sf::VertexArray edge2(sf::TriangleStrip, 52);
-    width = 6;
-    sf::CircleShape circ2(width / 2);
-    circ2.setFillColor(sf::Color::Black);
-    circ2.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
-    window.draw(circ2);
-    for (int i = 0; i < 50; i += 2)
-    {
-        vec0 = pss2[i] - pss2[i + 2];
-        vec1 = pss2[i + 1] - pss2[i + 3];
-        double dist = hypot(vec0, vec1);
-        edge2[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
-        edge2[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
-        edge2[i].color = sf::Color::Black;
-        edge2[i + 1].color = sf::Color::Black;
-        width -= 0.08;
-    }
-    vec0 = pss2[50] - pss2[48];
-    vec1 = pss2[51] - pss2[49];
-    dist = hypot(vec0, vec1);
-    edge2[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
-    edge2[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
-    edge2[50].color = sf::Color::Black;
-    edge2[51].color = sf::Color::Black;
-    window.draw(edge2);
-    circ2.setRadius(width / 2);
-    circ2.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
-    window.draw(circ2);
-    
+
+
+
+	window.draw(circ);
+	for (int i = 0; i < 50; i += 2)
+	{
+		double vec0 = pss2[i] - pss2[i + 2];
+		double vec1 = pss2[i + 1] - pss2[i + 3];
+		double dist = hypot(vec0, vec1);
+		edge[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
+		edge[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
+		edge[i].color = sf::Color(0, 0, 0, shad);
+		edge[i + 1].color = sf::Color(0, 0, 0, shad);
+		width -= 0.08;
+	}
+	double vec0 = pss2[50] - pss2[48];
+	double vec1 = pss2[51] - pss2[49];
+	dist = hypot(vec0, vec1);
+	edge[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
+	edge[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
+	edge[50].color = sf::Color(red_value, green_value, blue_value, shad);
+	edge[51].color = sf::Color(red_value, green_value, blue_value, shad);
+	window.draw(edge);
+	circ.setRadius(width / 2);
+	circ.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
+	window.draw(circ);
+
+	// drawing second arm arc
+	sf::VertexArray edge2(sf::TriangleStrip, 52);
+	width = 6;
+	sf::CircleShape circ2(width / 2);
+	circ2.setFillColor(sf::Color(red_value, green_value, blue_value));
+	circ2.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
+	window.draw(circ2);
+	for (int i = 0; i < 50; i += 2)
+	{
+		vec0 = pss2[i] - pss2[i + 2];
+		vec1 = pss2[i + 1] - pss2[i + 3];
+		double dist = hypot(vec0, vec1);
+		edge2[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
+		edge2[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
+		edge2[i].color = sf::Color(red_value, green_value, blue_value);
+		edge2[i + 1].color = sf::Color(red_value, green_value, blue_value);
+		width -= 0.08;
+	}
+	vec0 = pss2[50] - pss2[48];
+	vec1 = pss2[51] - pss2[49];
+	dist = hypot(vec0, vec1);
+	edge2[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
+	edge2[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
+	edge2[50].color = sf::Color(red_value, green_value, blue_value);
+	edge2[51].color = sf::Color(red_value, green_value, blue_value);
+	window.draw(edge2);
+	circ2.setRadius(width / 2);
+	circ2.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
+	window.draw(circ2);
 
 
 
 
 
     // drawing smoke
-    for (Json::Value &v : smoke_key_value)
-        if (GetKeyState(v.asInt()) & 0x8000)
-        {
-            window.draw(smoke);
-            break;
-        }
+
+
+
+	if (is_emoticonkeep) {
+		if (is_smoke)
+			window.draw(smoke);
+		for (Json::Value& v : smoke_key_value)
+
+			if (GetKeyState(v.asInt()) & 0x8000)
+			{
+				is_smoke = true;
+				break;
+			}
+		for (Json::Value& v : stopemoticon_value)
+			if (GetKeyState(v.asInt()) & 0x8000)
+			{
+				is_smoke = false;
+				break;
+			}
+	}
+	else
+	{
+		for (Json::Value& v : smoke_key_value)
+			if (GetKeyState(v.asInt()) & 0x8000)
+			{
+				window.draw(smoke);
+			}
+
+	}
 
 
 
@@ -701,8 +779,35 @@ void draw()
 
 	*/
     // drawing tablet
-    if (!is_mouse)
-        window.draw(device);
+	
+	if (!is_mouse) {
+		
+		for (Json::Value& v : mouse_leftkey_value)
+			if (GetKeyState(v.asInt()) & 0x8000)
+			{
+				mouse_state = 1;
+				break;
+			}
+		for (Json::Value& v : mouse_rightkey_value)
+			if (GetKeyState(v.asInt()) & 0x8000)
+			{
+				mouse_state = 2;
+				break;
+			}
+		switch (mouse_state)
+		{
+		case 1:
+			window.draw(mouse_left);
+			break;
+		case 2:
+			window.draw(mouse_right);
+			break;
+		default:
+			window.draw(device);
+			break;
+		}
+		mouse_state = 0;
+	}
 }
 }; // namespace osu
 

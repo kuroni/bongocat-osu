@@ -15,6 +15,8 @@
 #include <SFML/Graphics.hpp>
 #include "json/json.h"
 
+#define MAX_KEYS_NUM 50
+
 extern sf::RenderWindow window;
 
 namespace data
@@ -26,6 +28,7 @@ void error_msg(std::string error, std::string title);
 bool init();
 
 sf::Texture &load_texture(std::string path);
+sf::Texture &load_texture2(std::string path);
 }; // namespace data
 
 namespace osu
@@ -62,3 +65,19 @@ namespace mouse
 
 	void draw();
 }; // namespace mouse
+
+namespace morekeys
+{
+	bool init();
+
+	void draw();
+}; // namespace morekeys
+
+
+namespace morekeys_keybordonly
+{
+	bool init();
+
+	void draw();
+}; // namespace morekeys_keybordonly
+

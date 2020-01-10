@@ -1,4 +1,8 @@
 #include "header.hpp"
+#include <resource.h>
+
+#define VERSION "Bongo Cat Mver v0.1.0"
+
 
 
 sf::RenderWindow window;
@@ -6,7 +10,7 @@ sf::RenderWindow window;
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
 
-    window.create(sf::VideoMode(612, 352), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
+	window.create(sf::VideoMode(612, 352), VERSION, sf::Style::Titlebar | sf::Style::Close);
 
     // get refresh rate and set the frame limit
     DISPLAY_DEVICE device;
@@ -17,13 +21,25 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     ZeroMemory(&devmode, sizeof(DEVMODE));
     devmode.dmSize = sizeof(DEVMODE);
     EnumDisplaySettings((LPSTR)device.DeviceName, ENUM_REGISTRY_SETTINGS, &devmode);
-    window.setFramerateLimit(devmode.dmDisplayFrequency);
 
     // loading configs
     while (!data::init())
         continue;
 
     bool is_reload = false;
+
+	window.setFramerateLimit(data::cfg["addition"]["framerateLimit"].asInt());//最大帧数
+	sf::WindowHandle handle = window.getSystemHandle();
+	HICON hIcon;
+	hIcon = LoadIcon(hInstance, (LPCSTR)IDI_ICON1);
+	if (hIcon) {
+		SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+	}
+	if (data::cfg["addition"]["topWindow"].asBool())//置顶窗口
+	{
+		SetWindowPos(handle, HWND_TOPMOST, 1, 1, 1, 1, SWP_NOMOVE | SWP_NOSIZE);
+	}
+
 
     while (window.isOpen())
     {
@@ -71,6 +87,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             break;
 		case 5:
 			mouse::draw();
+			break;
+		case 6:
+			morekeys::draw();
+			break;
+		case 7:
+			morekeys_keybordonly::draw();
 			break;
         }
 

@@ -24,8 +24,17 @@ void create_config()
         "offsetY": [0, -65],
         "scalar": [1.0, 1.0]
     },
+	"addition":{
+		"framerateLimit":60,
+		"topWindow": false,
+		"armLineColor": [0, 0, 0],
+		"emoticonKeep": false,
+		"emoticonClear":[222]
+	},
     "osu": {
         "mouse": true,
+        "mouse_left": [1],
+		"mouse_right":[2],
         "key1": [90],
         "key2": [88],
         "smoke": [67],
@@ -50,8 +59,25 @@ void create_config()
         "key7K": [83, 68, 70, 32, 74, 75, 76]
     },
 	"mouse":{
-        "key1": [1,2],
-        "smoke": [186]
+		"mouse":true,
+        "mouse_left": [1],
+		"mouse_right":[2],
+        "face": [90,88,188,190]
+	},
+	"morekeys":{
+		"mouse":true,
+		"mouse_left": [1],
+		"mouse_right":[2],
+		"keybord":[90, 88, 188, 190],
+		"hand":[90,88,188,190],
+		"face":[186]
+	},
+	"morekeys_keybordonly":{
+		"keybord":[90, 88, 188, 190],
+		"lefthand":[87,65,83,68],
+		"righthand":[38,37,39,40],
+		"face":[186]
+	}
 
 })V0G0N";
     std::string error;
@@ -126,6 +152,10 @@ bool init()
         return mania::init();
 	case 5:
 		return mouse::init();
+	case 6:
+		return morekeys::init();
+	case 7:
+		return morekeys_keybordonly::init();
     default:
         error_msg("Mode value is not correct", "Error reading configs");
         return false;
@@ -138,5 +168,12 @@ sf::Texture &load_texture(std::string path)
         while (!img_holder[path].loadFromFile(path))
             error_msg("Cannot find file " + path, "Error importing images");
     return img_holder[path];
+}
+
+sf::Texture &load_texture2(std::string path)
+{
+	if (img_holder.find(path) == img_holder.end())
+		img_holder[path].loadFromFile(path);
+	return img_holder[path];
 }
 }; // namespace data
