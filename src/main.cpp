@@ -1,7 +1,7 @@
 #include "header.hpp"
 #include <resource.h>
 
-#define VERSION "Bongo Cat Mver v0.1.0"
+#define VERSION "Bongo Cat Mver v0.1.1"
 
 
 
@@ -28,14 +28,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
     bool is_reload = false;
 
-	window.setFramerateLimit(data::cfg["addition"]["framerateLimit"].asInt());//最大帧数
+	window.setFramerateLimit(data::cfg["decoration"]["framerateLimit"].asInt());//最大帧数
 	sf::WindowHandle handle = window.getSystemHandle();
 	HICON hIcon;
 	hIcon = LoadIcon(hInstance, (LPCSTR)IDI_ICON1);
 	if (hIcon) {
 		SendMessage(handle, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
 	}
-	if (data::cfg["addition"]["topWindow"].asBool())//置顶窗口
+	if (data::cfg["decoration"]["topWindow"].asBool())//置顶窗口
 	{
 		SetWindowPos(handle, HWND_TOPMOST, 1, 1, 1, 1, SWP_NOMOVE | SWP_NOSIZE);
 	}
@@ -73,25 +73,13 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         window.clear(sf::Color(red_value, green_value, blue_value));
         switch (mode)
         {
-        case 1:
-            osu::draw();
-            break;
-        case 2:
-            taiko::draw();
-            break;
-        case 3:
-            ctb::draw();
-            break;
-        case 4:
-            mania::draw();
-            break;
-		case 5:
-			mouse::draw();
+		case 1:
+            morekeys::draw();
 			break;
-		case 6:
-			morekeys::draw();
+		case 2:
+            mouse::draw();
 			break;
-		case 7:
+		case 3:
 			morekeys_keybordonly::draw();
 			break;
         }

@@ -10,73 +10,47 @@ void create_config()
     const char *s =
         R"V0G0N({
     "mode": 1,
-    "resolution": {
-        "letterboxing": false,
-        "width": 1920,
-        "height": 1080,
-        "horizontalPosition": 0,
-        "verticalPosition": 0
-    },
     "decoration": {
         "leftHanded": false,
         "rgb": [255, 255, 255],
         "offsetX": [0, 11],
         "offsetY": [0, -65],
-        "scalar": [1.0, 1.0]
-    },
-	"addition":{
+        "scalar": [1.0, 1.0],
 		"framerateLimit":60,
 		"topWindow": false,
 		"armLineColor": [0, 0, 0],
 		"emoticonKeep": false,
-		"emoticonClear":[222]
+		"emoticonClear":[222],
+        "correct":100,
+        "mouse_force_move":false
 	},
-    "osu": {
-        "mouse": true,
-        "mouse_left": [1],
-		"mouse_right":[2],
-        "key1": [90],
-        "key2": [88],
-        "smoke": [67],
-        "wave": [86],
-        "key3":[66],
-        "key4":[78]
+    "workarea":{
+        "workarea":false,
+        "top_left":[0,0],
+        "right_bottom":[1920,1080]
     },
-    "taiko": {
-        "leftCentre": [88],
-        "rightCentre": [67],
-        "leftRim": [90],
-        "rightRim": [86]
-    },
-    "catch": {
-        "left": [37],
-        "right": [39],
-        "dash": [16]
-    },
-    "mania": {
-        "4K": true,
-        "key4K": [68, 70, 74, 75],
-        "key7K": [83, 68, 70, 32, 74, 75, 76]
-    },
-	"mouse":{
-		"mouse":true,
-        "mouse_left": [1],
-		"mouse_right":[2],
-        "face": [90,88,188,190]
-	},
 	"morekeys":{
 		"mouse":true,
 		"mouse_left": [1],
 		"mouse_right":[2],
 		"keybord":[90, 88, 188, 190],
 		"hand":[90,88,188,190],
-		"face":[186]
+		"face":[186],
+        "sounds":[90,88,188,190]
+	},
+	"mouse":{
+		"mouse":true,
+        "mouse_left": [1],
+		"mouse_right":[2],
+        "face": [90,88,188,190],
+        "sounds":[90,88,188,190]
 	},
 	"morekeys_keybordonly":{
 		"keybord":[90, 88, 188, 190],
 		"lefthand":[87,65,83,68],
 		"righthand":[38,37,39,40],
-		"face":[186]
+		"face":[186],
+        "sounds":[90,88,188,190]
 	}
 
 })V0G0N";
@@ -142,19 +116,12 @@ bool init()
 
     switch (mode)
     {
-    case 1:
-        return osu::init();
-    case 2:
-        return taiko::init();
-    case 3:
-        return ctb::init();
-    case 4:
-        return mania::init();
-	case 5:
-		return mouse::init();
-	case 6:
-		return morekeys::init();
-	case 7:
+	case 1:
+        return morekeys::init();
+	case 2:
+        return mouse::init();
+
+	case 3:
 		return morekeys_keybordonly::init();
     default:
         error_msg("Mode value is not correct", "Error reading configs");
