@@ -1,7 +1,7 @@
 #include "header.hpp"
 #include <resource.h>
 
-#define VERSION "Bongo Cat Mver v0.1.1"
+#define VERSION "Bongo Cat Mver v0.1.2"
 
 
 
@@ -41,6 +41,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	}
 
 
+  
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -74,13 +76,10 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         switch (mode)
         {
 		case 1:
-            morekeys::draw();
+            standard::draw();
 			break;
 		case 2:
-            mouse::draw();
-			break;
-		case 3:
-			morekeys_keybordonly::draw();
+			keyboard::draw();
 			break;
         }
 

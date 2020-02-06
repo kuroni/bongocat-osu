@@ -5,6 +5,11 @@ namespace data
 Json::Value cfg;
 std::map<std::string, sf::Texture> img_holder;
 
+
+
+
+
+
 void create_config()
 {
     const char *s =
@@ -29,24 +34,18 @@ void create_config()
         "top_left":[0,0],
         "right_bottom":[1920,1080]
     },
-	"morekeys":{
+	"standard":{
 		"mouse":true,
 		"mouse_left": [1],
 		"mouse_right":[2],
-		"keybord":[90, 88, 188, 190],
+         "mouse_side":[5],
+		"keyboard":[90, 88, 188, 190],
 		"hand":[90,88,188,190],
 		"face":[186],
         "sounds":[90,88,188,190]
 	},
-	"mouse":{
-		"mouse":true,
-        "mouse_left": [1],
-		"mouse_right":[2],
-        "face": [90,88,188,190],
-        "sounds":[90,88,188,190]
-	},
-	"morekeys_keybordonly":{
-		"keybord":[90, 88, 188, 190],
+	"keyboard":{
+		"keyboard":[90, 88, 188, 190],
 		"lefthand":[87,65,83,68],
 		"righthand":[38,37,39,40],
 		"face":[186],
@@ -117,12 +116,9 @@ bool init()
     switch (mode)
     {
 	case 1:
-        return morekeys::init();
+        return standard::init();
 	case 2:
-        return mouse::init();
-
-	case 3:
-		return morekeys_keybordonly::init();
+		return keyboard::init();
     default:
         error_msg("Mode value is not correct", "Error reading configs");
         return false;

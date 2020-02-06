@@ -2,22 +2,22 @@
 #include "SFML/Graphics/Texture.hpp"
 
 
-namespace morekeys
+namespace standard
 {
-	Json::Value mouse_leftkey_value, mouse_rightkey_value, stopemoticon_value;
+	Json::Value mouse_leftkey_value, mouse_rightkey_value, mouse_sidekey_value,stopemoticon_value;
 
 	int offset_x, offset_y;
 	int horizontal, vertical;
 	double scale;
 	bool is_mouse, is_left_handed, is_emoticonkeep,is_workarea,is_mouse_force_move;
-	sf::Sprite bg, device, mouse_left, mouse_right,up;
+	sf::Sprite bg, device, mouse_left, mouse_right,mouse_side,up;
 
 	double correct=125;
 
 
 	int key_state = -1;
 	int mouse_state = 0;
-	int hand_state = 0;
+	int hand_state = -1;
 	int face_state = -1;
 
 	
@@ -35,6 +35,9 @@ namespace morekeys
 	sf::SoundBuffer soundBuffer[MAX_KEYS_NUM];
 	sf::Sound sound[MAX_KEYS_NUM];
 
+	sf::Time timer_hand[MAX_KEYS_NUM];
+	int hand_play_state[MAX_KEYS_NUM] = { 0 };
+	int hand_play_state_last[MAX_KEYS_NUM] = { 0 };
 
 
 
@@ -43,11 +46,16 @@ namespace morekeys
 	double letter_x, letter_y, s_height, s_width;
 
 
+	sf::Clock key_clock;
+	sf::Time init_time;
+
+
+
 
 	sf::Texture atextex;
 
 	DWORD WINAPI ThreadProc1(LPVOID lpParam);
-
+	int maxtime(sf::Time* time, int count);
 
 
 
@@ -86,6 +94,10 @@ namespace morekeys
 
 	bool init()
 	{
+		key_clock.restart();//初始化时间
+		init_time = timer_hand[0] = key_clock.getElapsedTime();
+
+
 
 
 		red_value = data::cfg["decoration"]["armLineColor"][0].asInt();
@@ -93,37 +105,43 @@ namespace morekeys
 		blue_value = data::cfg["decoration"]["armLineColor"][2].asInt();
 
 
+		correct = data::cfg["decoration"]["correct"].asInt();
 
 
-
-		if (!atextex.loadFromFile("img/morekeys/arm.png"))
+		if (!atextex.loadFromFile("img/standard/arm.png"))
 		{
 			data::error_msg("File not successfully loaded", "Error loading files");
 		}
 
 
 
-
+		
 		for (int i = 0; i < MAX_KEYS_NUM; i++)
 		{
-			keybord[i]=data::cfg["morekeys"]["keybord"][i].asInt();
-			keybord_press[i].setTexture(data::load_texture2("img/morekeys/keybord/" + std::to_string(i) + ".png"));
-			hand[i]= data::cfg["morekeys"]["hand"][i].asInt();
-			hand_press[i].setTexture(data::load_texture2("img/morekeys/hand/" + std::to_string(i) + ".png"));
-			face[i] = data::cfg["morekeys"]["face"][i].asInt();
-			face_press[i].setTexture(data::load_texture2("img/morekeys/face/" + std::to_string(i) + ".png"));
+			keybord[i]=data::cfg["standard"]["keyboard"][i].asInt();
+			keybord_press[i].setTexture(data::load_texture2("img/standard/keyboard/" + std::to_string(i) + ".png"));
+			hand[i]= data::cfg["standard"]["hand"][i].asInt();
+			hand_press[i].setTexture(data::load_texture2("img/standard/hand/" + std::to_string(i) + ".png"));
+			face[i] = data::cfg["standard"]["face"][i].asInt();
+			face_press[i].setTexture(data::load_texture2("img/standard/face/" + std::to_string(i) + ".png"));
 
-			sounds[i] = data::cfg["morekeys"]["sounds"][i].asInt();
-			if (!soundBuffer[i].loadFromFile(("img/morekeys/sound/" + std::to_string(i) + ".wav")))
-				if (!soundBuffer[i].loadFromFile(("img/morekeys/sound/" + std::to_string(i) + ".ogg")))
-					if (!soundBuffer[i].loadFromFile(("img/morekeys/sound/" + std::to_string(i) + ".flac")));
+			sounds[i] = data::cfg["standard"]["sounds"][i].asInt();
+			if (!soundBuffer[i].loadFromFile(("img/standard/sound/" + std::to_string(i) + ".wav")))
+				if (!soundBuffer[i].loadFromFile(("img/standard/sound/" + std::to_string(i) + ".ogg")))
+					if (!soundBuffer[i].loadFromFile(("img/standard/sound/" + std::to_string(i) + ".flac")));
 			sound[i].setBuffer(soundBuffer[i]);
+
+
+			timer_hand[i]= timer_hand[0];
+
+
+
 		}
 
 
 
 			// getting configs
-		is_mouse = data::cfg["morekeys"]["mouse"].asBool();
+		is_mouse = data::cfg["standard"]["mouse"].asBool();
 		is_emoticonkeep = data::cfg["decoration"]["emoticonKeep"].asBool();
 		is_workarea= data::cfg["workarea"]["workarea"].asBool();
 		is_mouse_force_move= data::cfg["decoration"]["mouse_force_move"].asBool();
@@ -132,12 +150,18 @@ namespace morekeys
 
 		bool chk[256];
 		std::fill(chk, chk + 256, false);
-		mouse_leftkey_value = data::cfg["mouse"]["mouse_left"];
+		mouse_leftkey_value = data::cfg["standard"]["mouse_left"];
 		for (Json::Value& v : mouse_leftkey_value)
 			chk[v.asInt()] = true;
-		mouse_rightkey_value = data::cfg["mouse"]["mouse_right"];
+		mouse_rightkey_value = data::cfg["standard"]["mouse_right"];
 		for (Json::Value& v : mouse_rightkey_value)
 			chk[v.asInt()] = true;
+
+		mouse_sidekey_value = data::cfg["standard"]["mouse_side"];
+		for (Json::Value& v : mouse_sidekey_value)
+			chk[v.asInt()] = true;
+
+
 
 
 
@@ -155,21 +179,22 @@ namespace morekeys
 		}
 
 		// importing sprites
-		up.setTexture(data::load_texture("img/morekeys/up.png"));
+		up.setTexture(data::load_texture("img/standard/up.png"));
 
 		if (is_mouse)
 		{
-			bg.setTexture(data::load_texture("img/morekeys/mousebg.png"));
-			device.setTexture(data::load_texture("img/morekeys/mouse.png"), true);
-			mouse_left.setTexture(data::load_texture("img/morekeys/mouse_left.png"), true);
-			mouse_right.setTexture(data::load_texture("img/morekeys/mouse_right.png"), true);
+			bg.setTexture(data::load_texture("img/standard/mousebg.png"));
+			device.setTexture(data::load_texture("img/standard/mouse.png"), true);
+			mouse_left.setTexture(data::load_texture("img/standard/mouse_left.png"), true);
+			mouse_right.setTexture(data::load_texture("img/standard/mouse_right.png"), true);
+			mouse_side.setTexture(data::load_texture("img/standard/mouse_side.png"), true);
 		}
 		else
 		{
-			bg.setTexture(data::load_texture("img/morekeys/tabletbg.png"));
-			device.setTexture(data::load_texture("img/morekeys/tablet.png"), true);
-			mouse_left.setTexture(data::load_texture("img/morekeys/tablet_left.png"), true);
-			mouse_right.setTexture(data::load_texture("img/morekeys/tablet_right.png"), true);
+			bg.setTexture(data::load_texture("img/standard/tabletbg.png"));
+			device.setTexture(data::load_texture("img/standard/tablet.png"), true);
+			mouse_left.setTexture(data::load_texture("img/standard/tablet_left.png"), true);
+			mouse_right.setTexture(data::load_texture("img/standard/tablet_right.png"), true);
 		}
 
 
@@ -261,6 +286,9 @@ namespace morekeys
 
 		return true;
 	}
+
+
+
 
 	void draw()
 	{
@@ -380,7 +408,7 @@ namespace morekeys
 		device.setPosition(mpos0 + dx + offset_x, mpos1 + dy + offset_y);
 		mouse_left.setPosition(mpos0 + dx + offset_x, mpos1 + dy + offset_y);
 		mouse_right.setPosition(mpos0 + dx + offset_x, mpos1 + dy + offset_y);
-
+		mouse_side.setPosition(mpos0 + dx + offset_x, mpos1 + dy + offset_y);
 
 		// drawing mouse
 		if (is_mouse) {
@@ -397,6 +425,14 @@ namespace morekeys
 					window.draw(mouse_right);
 					break;
 				}
+			for (Json::Value& v : mouse_sidekey_value)
+				if (GetKeyState(v.asInt()) & 0x8000)
+				{
+					window.draw(mouse_side);
+					break;
+				}
+
+
 		}
 		// drawing arms
 	/*	sf::VertexArray fill(sf::TriangleStrip, 26);
@@ -503,6 +539,8 @@ namespace morekeys
 
 
 		key_state = -1;
+		hand_state = -1;
+
 		for (int i = 0; i < MAX_KEYS_NUM; i++)
 		{
 			if (GetKeyState(keybord[i]) & 0x8000)
@@ -518,40 +556,57 @@ namespace morekeys
 			}
 			sound_play_state_last[i] = sound_play_state[i];
 			sound_play_state[i] = 0;
-		}
-		sound_state = -1;
 
-		hand_state=-1;
-		for (int i = 0; i < MAX_KEYS_NUM; i++)
-		{
-			if (GetKeyState(hand[i]) & 0x8000)
+
+			if (GetKeyState(hand[i]) & 0x8000) {
 				hand_state = i;
-			if (GetKeyState(face[i]) & 0x8000)
+				hand_play_state[hand_state] = 1;
+				if (hand_play_state[hand_state] == 1 && hand_play_state_last[hand_state] == 0)
+					timer_hand[i] = key_clock.getElapsedTime();
+			}
+			else
+				timer_hand[i] = init_time;
+			hand_play_state_last[i] = hand_play_state[i];
+			hand_play_state[i] = 0;
+
+
+
+
+			if (GetKeyState(face[i]) & 0x8000) 
 				face_state = i;
 
 		}
-		if (hand_state != -1) {
-			window.draw(hand_press[hand_state]);
-		}
+
+
+
+		sound_state = -1;
+
+
+
+
+
+		
+		if (hand_state != -1) 
+			window.draw(hand_press[maxtime(timer_hand, MAX_KEYS_NUM)]);
 		else
 			window.draw(up);
 
+
+
 		if (is_emoticonkeep) {
-			if (face_state != -1) {
+			if (face_state != -1) 
 				window.draw(face_press[face_state]);
-			}
-			for (Json::Value& v : stopemoticon_value)
+			for (Json::Value& v : stopemoticon_value) {
 				if (GetKeyState(v.asInt()) & 0x8000)
 				{
 					face_state = -1;
 					break;
 				}
-
+			}
 		}
 		else {
-			if (face_state != -1) {
+			if (face_state != -1) 
 				window.draw(face_press[face_state]);
-			}
 			face_state = -1;
 		}
 
@@ -626,8 +681,27 @@ namespace morekeys
 
 
 
+	int maxtime(sf::Time* time, int count)
+	{
+		int state=0;
+		sf::Time max_time=time[0];
+		
+		for (int i = 0; i < count; i++) 
+			if (max_time < time[i]) {
+				max_time = time[i];
+				state = i;
+			}
+		return state;
+	}
 
-}; // namespace morekeys
+
+
+
+
+
+
+
+}; // namespace standard
 
 
 

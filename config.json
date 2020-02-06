@@ -1,0 +1,48 @@
+//version 0.1.2
+//ctrl+r能快速重置程序，能让你马上看到修改结果，少部分设置项的修改需要重启程序生效
+//反馈问题、获取更新、约稿接稿可加Q裙374295922
+//图文详解：https://www.bilibili.com/read/readlist/rl191271
+//联系作者：https://space.bilibili.com/5808772
+//按键值查询：https://keycode.info/
+
+{                          
+     "mode": 1,
+     "decoration": {
+          "leftHanded": false,
+          "rgb": [0, 0, 255],
+          "offsetX": [10, 11],
+          "offsetY": [-10, -65],
+          "scalar": [1.0, 1.0],
+          "framerateLimit":60,
+          "topWindow": false,
+          "armLineColor": [0, 0, 0],
+          "emoticonKeep": true,
+          "emoticonClear":[222],
+          "correct":100,
+          "mouse_force_move":true
+    },
+     "workarea":{
+          "workarea":false,
+          "top_left":[2560,0],
+          "right_bottom":[4096,864]
+    },
+
+
+     "standard":{
+          "mouse":false,
+          "mouse_left": [1],
+          "mouse_right":[2],
+          "mouse_side":[5,6],
+          "keyboard":[81, 87, 69, 82,68,70,49,50,51,52,53,54,55],
+          "hand":[81, 87, 69, 82,68,70,49,50,51,52,53,54,55],
+          "face":[97, 98, 99, 100],
+          "sounds":[101,102,103,104]
+      },
+      "keyboard":{
+          "keyboard":[17,16,82, 40,37,39,38],
+          "lefthand":[17,16,82],
+          "righthand":[40,37,39,38],
+          "face":[97,98,99,100],
+          "sounds":[101,102,103,104]
+     }
+}

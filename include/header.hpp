@@ -13,11 +13,15 @@
 #include <string.h>
 
 #include <SFML/Graphics.hpp>
+#include<SFML/Audio.hpp>
 #include "json/json.h"
 
 #define MAX_KEYS_NUM 50
 
+
+
 extern sf::RenderWindow window;
+
 
 namespace data
 {
@@ -31,53 +35,19 @@ sf::Texture &load_texture(std::string path);
 sf::Texture &load_texture2(std::string path);
 }; // namespace data
 
-namespace osu
-{
-bool init();
 
-void draw();
-}; // namespace osu
-
-namespace taiko
-{
-bool init();
-
-void draw();
-}; // namespace taiko
-
-namespace ctb
-{
-bool init();
-
-void draw();
-}; // namespace ctb
-
-namespace mania
-{
-bool init();
-
-void draw();
-}; // namespace mania
-
-namespace mouse
+namespace standard
 {
 	bool init();
 
 	void draw();
-}; // namespace mouse
+}; // namespace standard
 
-namespace morekeys
+
+namespace keyboard
 {
 	bool init();
 
 	void draw();
-}; // namespace morekeys
-
-
-namespace morekeys_keybordonly
-{
-	bool init();
-
-	void draw();
-}; // namespace morekeys_keybordonly
+}; // namespace keyboard
 
