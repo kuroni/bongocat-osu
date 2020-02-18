@@ -17,8 +17,7 @@
 
 extern sf::RenderWindow window;
 
-namespace data
-{
+namespace data {
 extern Json::Value cfg;
 
 void error_msg(std::string error, std::string title);
@@ -28,29 +27,25 @@ bool init();
 sf::Texture &load_texture(std::string path);
 }; // namespace data
 
-namespace osu
-{
+namespace osu {
 bool init();
 
 void draw();
 }; // namespace osu
 
-namespace taiko
-{
+namespace taiko {
 bool init();
 
 void draw();
 }; // namespace taiko
 
-namespace ctb
-{
+namespace ctb {
 bool init();
 
 void draw();
 }; // namespace ctb
 
-namespace mania
-{
+namespace mania {
 bool init();
 
 void draw();
