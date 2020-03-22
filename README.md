@@ -16,7 +16,7 @@ Press Ctrl + R to reload configuration and images (will only reload configuratio
 
 Supported operating system:
 * Windows
-* Linux (tested with Arch Linux 4.18.9 with WINE 3.16)
+* Linux (tested with Arch Linux with WINE Staging 5). Note: You **must** use WINE Staging, because for whatever reason on stable WINE bongocat-osu doesn't register keyboard input from other windows.
 
 _Notice_: If you're using WINE on Linux, make sure that osu! and this application run in the same `WINEPREFIX`.
 
