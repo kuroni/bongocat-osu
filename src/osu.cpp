@@ -304,14 +304,6 @@ void draw() {
     circ2.setRadius(width / 2);
     circ2.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
     window.draw(circ2);
-    
-    // drawing smoke
-    for (Json::Value &v : smoke_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
-            window.draw(smoke);
-            break;
-        }
-    }
 
     // drawing keypresses
     bool left_key = false;
@@ -400,6 +392,14 @@ void draw() {
     // drawing tablet
     if (!is_mouse) {
         window.draw(device);
+    }
+    
+    // drawing smoke
+    for (Json::Value &v : smoke_key_value) {
+        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+            window.draw(smoke);
+            break;
+        }
     }
 }
 }; // namespace osu
