@@ -26,6 +26,7 @@ void create_config() {
     "osu": {
         "mouse": true,
         "paw": [255, 255, 255],
+        "pawEdge": [0, 0, 0],
         "key1": [90],
         "key2": [88],
         "smoke": [67],
