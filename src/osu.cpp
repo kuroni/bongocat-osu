@@ -285,7 +285,7 @@ void draw() {
     sf::VertexArray edge2(sf::TriangleStrip, 52);
     width = 6;
     sf::CircleShape circ2(width / 2);
-    circ2.setFillColor(sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 0));
+    circ2.setFillColor(sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255));
     circ2.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
     window.draw(circ2);
     for (int i = 0; i < 50; i += 2) {
@@ -294,8 +294,8 @@ void draw() {
         double dist = hypot(vec0, vec1);
         edge2[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
         edge2[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
-        edge2[i].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 0);
-        edge2[i + 1].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 0);
+        edge2[i].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255);
+        edge2[i + 1].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255);
         width -= 0.08;
     }
     vec0 = pss2[50] - pss2[48];
@@ -303,8 +303,8 @@ void draw() {
     dist = hypot(vec0, vec1);
     edge2[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
     edge2[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
-    edge2[50].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 0);
-    edge2[51].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 0);
+    edge2[50].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255);
+    edge2[51].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255);
     window.draw(edge2);
     circ2.setRadius(width / 2);
     circ2.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
