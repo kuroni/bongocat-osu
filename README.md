@@ -20,11 +20,6 @@ Supported operating system:
 
 _Notice_: If you're using WINE on Linux, make sure that osu! and this application run in the same `WINEPREFIX`.
 
-## Todo
-* Support other modes.
-* Optimize further for consistency and speed.
-* Allow even more customizations.
-
 ## For developers
 This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https://github.com/open-source-parsers/jsoncpp). JsonCpp libraries are directly included in the source using the provided `amalgamation.py` from the developers.
 
