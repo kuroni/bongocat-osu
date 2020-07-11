@@ -1,4 +1,5 @@
 #include "header.hpp"
+#define BONGO_KEYPRESS_THRESHOLD 0.002
 
 namespace ctb {
 Json::Value left_key_value, right_key_value, dash_key_value;
@@ -44,7 +45,7 @@ void draw() {
     // drawing left-right keypresses
     bool left_key = false;
     for (Json::Value &v : left_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             left_key = true;
             break;
         }
@@ -60,7 +61,7 @@ void draw() {
 
     bool right_key = false;
     for (Json::Value &v : right_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             right_key = true;
             break;
         }
@@ -79,14 +80,14 @@ void draw() {
         window.draw(mid);
     }
     if (key_state == 1) {
-        if ((clock() - timer_right_key) / CLOCKS_PER_SEC > 0.031) {
+        if ((clock() - timer_right_key) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
             window.draw(left);
             timer_left_key = clock();
         } else {
             window.draw(mid);
         }
     } else if (key_state == 2) {
-        if ((clock() - timer_left_key) / CLOCKS_PER_SEC > 0.031) {
+        if ((clock() - timer_left_key) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
             window.draw(right);
             timer_right_key = clock();
         } else {
@@ -96,7 +97,7 @@ void draw() {
 
     bool is_dash = false;
     for (Json::Value &v : dash_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             window.draw(dash);
             is_dash = true;
             break;

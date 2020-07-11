@@ -2,3 +2,6 @@
 *.exe
 *.o
 Makefile
+bongo
+bin/*
+NOTE

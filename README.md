@@ -1,41 +1,55 @@
-# Description
-An osu! Bongo Cat overlay with smooth paw movement and simple skinning ability, written in C++.
+# This is Linux native port
+- for more information on how to use, please see the [upstream](https://github.com/kuroni/bongocat-osu),
+[see how it perform](https://youtu.be/OylY3CnOpKs)
 
-You can find how to configure the application in our [wiki](https://github.com/kuroni/bongocat-osu/wiki/Settings).
+# Change
+- Dynamic link sfml
+- Add toggle smoke key in osu!
+- reduce keyboard press rate timeout in osu!, ctb and taiko mode to 0.002 to reduce the feeling of input lag
+- Xrandr for detect monitor refresh rate
+- SDL2 for message box
+- libxdo for retreive the cursor point and retreive the foreground window
+- SFML for detect keypress and the rest
 
-Releases can be found [here](https://github.com/kuroni/bongocat-osu/releases).
+# Dependencies
+- g++
+- libxdo
+- sdl2
+- sfml
+- x11
+- xrandr
 
-Any suggestion and/or collaboration, especially that relating to sprites, is welcomed! Thank you!
-
-[Original post](https://www.reddit.com/r/osugame/comments/9hrkte/i_know_bongo_cat_is_getting_old_but_heres_a_nicer/) by [u/Kuvster](https://github.com/Kuvster).
-
-## Further information
-In order to play with fullscreen on Windows 10, run both osu! and this application in Windows 7 compability mode.
-
-Press Ctrl + R to reload configuration and images (will only reload configurations when the window is focused).
-
-Supported operating system:
-* Windows
-* Linux (tested with Arch Linux with WINE Staging 5). Note: You **must** use WINE Staging, because for whatever reason on stable WINE bongocat-osu doesn't register keyboard input from other windows.
-
-_Notice_: If you're using WINE on Linux, make sure that osu! and this application run in the same `WINEPREFIX`.
-
-## For developers
-This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https://github.com/open-source-parsers/jsoncpp). JsonCpp libraries are directly included in the source using the provided `amalgamation.py` from the developers.
-
-To build the source, download the SFML libraries, duplicate `Makefile.demo` to `Makefile`, then replace *`<SFML-folder>`* in `Makefile` with the desired folder, and run these commands from the base directory:
-
+# Getting start
+1. make sure you have all dependencies and its lib install
+2. clone this repository
+```sh
+git clone "https://github.com/CSaratakij/bongocat-osu" && cd bongocat-osu
 ```
-mkdir bin
+3. checkout 'feature-linux-native-port' branch
+```sh
+git checkout origin/feature-linux-native-port
+```
+4. copy Makefile.linux to Makefile
+```sh
+cp Makefile.linux Makefile
+```
+5. run make command
+```sh
 make
 ```
-
-To test the program run this from the base directory:
-
+6. copy or symbolic link executable from 'bin/bongo' to root directory
+```sh
+cp bin/bongo .
 ```
-make test
+7. make it executable
+```sh
+chmod +x bongo
+```
+8. run
+```sh
+./bongo
 ```
 
-Alternatively, you can copy the newly-compiled `bin/bongocat.exe` into the base directory and execute it.
+# Known issue
+- Currently, it find image by relative path. So make sure to run executable inside the directory that have 'img' dir in it.
 
-If you have troubles compiling, it can be due to version mismatch between your compiler and SFML. See [#43](https://github.com/kuroni/bongocat-osu/issues/43) for more information.

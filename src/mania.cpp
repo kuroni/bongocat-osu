@@ -61,12 +61,12 @@ void draw_4K() {
     int left_sum = 0, right_sum = 0;
 
     for (int i = 0; i < 2; i++) {
-        if (GetKeyState(left_key_value_4K[i]) & WM_KEYDOWN) {
+        if (input::is_pressed(left_key_value_4K[i])) {
             window.draw(left_4K[i]);
             left_cnt++;
             left_sum += i;
         }
-        if (GetKeyState(right_key_value_4K[i]) & WM_KEYDOWN) {
+        if (input::is_pressed(right_key_value_4K[i])) {
             window.draw(right_4K[i]);
             right_cnt++;
             right_sum += i;
@@ -109,12 +109,12 @@ void draw_7K() {
     int left_sum = 0, right_sum = 0;
 
     for (int i = 0; i < 4; i++) {
-        if (GetKeyState(left_key_value_7K[i]) & WM_KEYDOWN) {
+        if (input::is_pressed(left_key_value_7K[i])) {
             window.draw(left_7K[i]);
             left_cnt++;
             left_sum += i;
         }
-        if (GetKeyState(right_key_value_7K[i]) & WM_KEYDOWN) {
+        if (input::is_pressed(right_key_value_7K[i])) {
             window.draw(right_7K[i]);
             right_cnt++;
             right_sum += i;
