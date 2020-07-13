@@ -159,7 +159,14 @@ void draw() {
         bool can_get_name = (name_len_ret > 0);
 
         if (can_get_name) {
-            std::string title(reinterpret_cast<char*>(name_ret));
+
+            std::string title = "";
+
+            if (name_ret != NULL)
+            {
+                std::string foreground_title(reinterpret_cast<char*>(name_ret));
+                title = foreground_title;
+            }
 
             if (title.find("osu!") == 0) {
                 if (!is_letterbox) {
