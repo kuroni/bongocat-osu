@@ -51,7 +51,7 @@ void init()
 }
 
 sf::Keyboard::Key ascii_to_key(int ascii_key) {
-    bool is_out_of_range = (ascii_key < 0) || (ascii_key > 128);
+    bool is_out_of_range = (ascii_key < 0) || (ascii_key > (TOTAl_INPUT_TABLE_SIZE - 1));
 
     if (is_out_of_range) {
         return sf::Keyboard::Unknown;
