@@ -49,11 +49,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         }
 
         int mode = data::cfg["mode"].asInt();
-        int red_value = data::cfg["decoration"]["rgb"][0].asInt();
-        int green_value = data::cfg["decoration"]["rgb"][1].asInt();
-        int blue_value = data::cfg["decoration"]["rgb"][2].asInt();
 
-        window.clear(sf::Color(red_value, green_value, blue_value));
+        Json::Value rgb = data::cfg["decoration"]["rgb"];
+        int red_value = rgb[0].asInt();
+        int green_value = rgb[1].asInt();
+        int blue_value = rgb[2].asInt();
+        int alpha_value = rgb.size() == 3 ? 255 : rgb[3].asInt();
+
+        window.clear(sf::Color(red_value, green_value, blue_value, alpha_value));
         switch (mode) {
         case 1:
             osu::draw();

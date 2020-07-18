@@ -5,7 +5,7 @@ Json::Value left_key_value, right_key_value, smoke_key_value, wave_key_value;
 int osu_x, osu_y, osu_h, osu_v;
 int offset_x, offset_y;
 int horizontal, vertical;
-int paw_r, paw_g, paw_b;
+int paw_r, paw_g, paw_b, paw_a;
 int paw_edge_r, paw_edge_g, paw_edge_b;
 double scale;
 bool is_mouse, is_letterbox, is_left_handed, is_enable_toggle_smoke;
@@ -48,6 +48,7 @@ bool init() {
     paw_r = osu["paw"][0].asInt();
     paw_g = osu["paw"][1].asInt();
     paw_b = osu["paw"][2].asInt();
+    paw_a = osu["paw"].size() == 3 ? 255 : osu["paw"][3].asInt();
 
     paw_edge_r = osu["pawEdge"][0].asInt();
     paw_edge_g = osu["pawEdge"][1].asInt();
@@ -252,8 +253,8 @@ void draw() {
     for (int i = 0; i < 26; i += 2) {
         fill[i].position = sf::Vector2f(pss2[i], pss2[i + 1]);
         fill[i + 1].position = sf::Vector2f(pss2[52 - i - 2], pss2[52 - i - 1]);
-        fill[i].color = sf::Color(paw_r, paw_g, paw_b, 255);
-        fill[i + 1].color = sf::Color(paw_r, paw_g, paw_b, 255);
+        fill[i].color = sf::Color(paw_r, paw_g, paw_b, paw_a);
+        fill[i + 1].color = sf::Color(paw_r, paw_g, paw_b, paw_a);
     }
     window.draw(fill);
 
