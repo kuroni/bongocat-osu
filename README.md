@@ -20,11 +20,6 @@ Supported operating system:
 
 _Notice_: If you're using WINE on Linux, make sure that osu! and this application run in the same `WINEPREFIX`.
 
-## Todo
-* Support other modes.
-* Optimize further for consistency and speed.
-* Allow even more customizations.
-
 ## For developers
 This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https://github.com/open-source-parsers/jsoncpp). JsonCpp libraries are directly included in the source using the provided `amalgamation.py` from the developers.
 
@@ -42,3 +37,5 @@ make test
 ```
 
 Alternatively, you can copy the newly-compiled `bin/bongocat.exe` into the base directory and execute it.
+
+If you have troubles compiling, it can be due to version mismatch between your compiler and SFML. See [#43](https://github.com/kuroni/bongocat-osu/issues/43) for more information.
