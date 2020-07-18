@@ -1,4 +1,5 @@
 #include "header.hpp"
+#define BONGO_KEYPRESS_THRESHOLD 0.002
 
 namespace taiko {
 Json::Value rim_key_value[2], centre_key_value[2];
@@ -59,7 +60,7 @@ void draw() {
     for (int i = 0; i < 2; i++) {
         bool rim_key = false;
         for (Json::Value &v : rim_key_value[i]) {
-            if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+            if (input::is_pressed(v.asInt())) {
                 rim_key = true;
                 break;
             }
@@ -75,7 +76,7 @@ void draw() {
 
         bool centre_key = false;
         for (Json::Value &v : centre_key_value[i]) {
-            if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+            if (input::is_pressed(v.asInt())) {
                 centre_key = true;
                 break;
             }
@@ -94,14 +95,14 @@ void draw() {
             window.draw(up[i]);
         }
         if (key_state[i] == 1) {
-            if ((clock() - timer_centre_key[i]) / CLOCKS_PER_SEC > 0.031) {
+            if ((clock() - timer_centre_key[i]) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
                 window.draw(rim[i]);
                 timer_rim_key[i] = clock();
             } else {
                 window.draw(up[i]);
             }
         } else if (key_state[i] == 2) {
-            if ((clock() - timer_rim_key[i]) / CLOCKS_PER_SEC > 0.031) {
+            if ((clock() - timer_rim_key[i]) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
                 window.draw(centre[i]);
                 timer_centre_key[i] = clock();
             } else {

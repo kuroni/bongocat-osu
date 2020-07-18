@@ -8,7 +8,7 @@
 #include <map>
 
 #include <time.h>
-#include <windows.h>
+
 #include <math.h>
 #include <string.h>
 
@@ -27,10 +27,23 @@ bool init();
 sf::Texture &load_texture(std::string path);
 }; // namespace data
 
+namespace input {
+    void init();
+
+    sf::Keyboard::Key ascii_to_key(int ascii_key);
+
+    bool is_pressed(int ascii_key);
+
+    bool is_pressed(sf::Keyboard::Key key);
+}; // namespace input
+
 namespace osu {
 bool init();
 
 void draw();
+
+void cleanup();
+
 }; // namespace osu
 
 namespace taiko {
