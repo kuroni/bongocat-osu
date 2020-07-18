@@ -12,20 +12,22 @@ double timer_right_key = -1;
 
 bool init() {
     // getting configs
+    Json::Value ctb = data::cfg["catch"];
+
     bool chk[256];
     std::fill(chk, chk + 256, false);
-    left_key_value = data::cfg["catch"]["left"];
+    left_key_value = ctb["left"];
     for (Json::Value &v : left_key_value) {
         chk[v.asInt()] = true;
     }
-    right_key_value = data::cfg["catch"]["right"];
+    right_key_value = ctb["right"];
     for (Json::Value &v : right_key_value) {
         if (chk[v.asInt()]) {
             data::error_msg("Overlapping osu!catch keybinds", "Error reading configs");
             return false;
         }
     }
-    dash_key_value = data::cfg["catch"]["dash"];
+    dash_key_value = ctb["dash"];
 
     // importing sprites
     bg.setTexture(data::load_texture("img/catch/bg.png"));
@@ -79,14 +81,14 @@ void draw() {
         window.draw(mid);
     }
     if (key_state == 1) {
-        if ((clock() - timer_right_key) / CLOCKS_PER_SEC > 0.031) {
+        if ((clock() - timer_right_key) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
             window.draw(left);
             timer_left_key = clock();
         } else {
             window.draw(mid);
         }
     } else if (key_state == 2) {
-        if ((clock() - timer_left_key) / CLOCKS_PER_SEC > 0.031) {
+        if ((clock() - timer_left_key) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
             window.draw(right);
             timer_right_key = clock();
         } else {

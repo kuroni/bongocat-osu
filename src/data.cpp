@@ -30,7 +30,7 @@ void create_config() {
         "key1": [90],
         "key2": [88],
         "smoke": [67],
-        "wave": [86]
+        "wave": []
     },
     "taiko": {
         "leftCentre": [88],
@@ -47,6 +47,9 @@ void create_config() {
         "4K": true,
         "key4K": [68, 70, 74, 75],
         "key7K": [83, 68, 70, 32, 74, 75, 76]
+    },
+    "custom": {
+        "keyContainers": []
     }
 })V0G0N";
     std::string error;
@@ -70,10 +73,10 @@ bool update(Json::Value &cfg_default, Json::Value &cfg) {
                 error_msg("Value type error in config.json", "Error reading configs");
                 return false;
             }
-            if (cfg_default[key].isArray()) {
+            if (cfg_default[key].isArray() && !cfg_default[key].empty()) {
                 for (Json::Value &v : cfg[key]) {
                     if (v.type() != cfg_default[key][0].type()) {
-                        error_msg("Value type error in config.json", "Error reading configs");
+                        error_msg("Value type in array error in config.json", "Error reading configs");
                         return false;
                     }
                 }
@@ -83,6 +86,8 @@ bool update(Json::Value &cfg_default, Json::Value &cfg) {
             } else {
                 cfg_default[key] = cfg[key];
             }
+        } else {
+            cfg_default[key] = cfg[key];
         }
     }
     return is_update;
@@ -121,6 +126,8 @@ bool init() {
         return ctb::init();
     case 4:
         return mania::init();
+    case 5:
+        return custom::init();
     default:
         error_msg("Mode value is not correct", "Error reading configs");
         return false;

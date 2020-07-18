@@ -13,13 +13,14 @@ double timer_centre_key[2] = {-1, -1};
 bool init() {
     // getting configs
     bool chk[256];
-
     std::fill(chk, chk + 256, false);
-    rim_key_value[0] = data::cfg["taiko"]["leftRim"];
+    Json::Value taiko = data::cfg["taiko"];
+
+    rim_key_value[0] = taiko["leftRim"];
     for (Json::Value &v : rim_key_value[0]) {
         chk[v.asInt()] = true;
     }
-    centre_key_value[0] = data::cfg["taiko"]["leftCentre"];
+    centre_key_value[0] = taiko["leftCentre"];
     for (Json::Value &v : centre_key_value[0]) {
         if (chk[v.asInt()]) {
             data::error_msg("Overlapping osu!taiko keybinds", "Error reading configs");
@@ -28,11 +29,11 @@ bool init() {
     }
 
     std::fill(chk, chk + 256, false);
-    rim_key_value[1] = data::cfg["taiko"]["rightRim"];
+    rim_key_value[1] = taiko["rightRim"];
     for (Json::Value &v : rim_key_value[1]) {
         chk[v.asInt()] = true;
     }
-    centre_key_value[1] = data::cfg["taiko"]["rightCentre"];
+    centre_key_value[1] = taiko["rightCentre"];
     for (Json::Value &v : centre_key_value[1]) {
         if (chk[v.asInt()]) {
             data::error_msg("Overlapping osu!taiko keybinds", "Error reading configs");
@@ -94,14 +95,14 @@ void draw() {
             window.draw(up[i]);
         }
         if (key_state[i] == 1) {
-            if ((clock() - timer_centre_key[i]) / CLOCKS_PER_SEC > 0.031) {
+            if ((clock() - timer_centre_key[i]) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
                 window.draw(rim[i]);
                 timer_rim_key[i] = clock();
             } else {
                 window.draw(up[i]);
             }
         } else if (key_state[i] == 2) {
-            if ((clock() - timer_rim_key[i]) / CLOCKS_PER_SEC > 0.031) {
+            if ((clock() - timer_rim_key[i]) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
                 window.draw(centre[i]);
                 timer_centre_key[i] = clock();
             } else {

@@ -9,20 +9,22 @@ bool is_4K;
 
 bool init() {
     // getting configs
-    is_4K = data::cfg["mania"]["4K"].asBool();
+    Json::Value mania = data::cfg["mania"];
+
+    is_4K = mania["4K"].asBool();
 
     for (int i = 0; i < 2; i++) {
-        left_key_value_4K[i] = data::cfg["mania"]["key4K"][i].asInt();
+        left_key_value_4K[i] = mania["key4K"][i].asInt();
     }
     for (int i = 0; i < 2; i++) {
-        right_key_value_4K[i] = data::cfg["mania"]["key4K"][i + 2].asInt();
+        right_key_value_4K[i] = mania["key4K"][i + 2].asInt();
     }
 
     for (int i = 0; i < 4; i++) {
-        left_key_value_7K[i] = data::cfg["mania"]["key7K"][i].asInt();
+        left_key_value_7K[i] = mania["key7K"][i].asInt();
     }
     for (int i = 0; i < 4; i++) {
-        right_key_value_7K[i] = data::cfg["mania"]["key7K"][i + 3].asInt();
+        right_key_value_7K[i] = mania["key7K"][i + 3].asInt();
     }
 
     // importing sprites

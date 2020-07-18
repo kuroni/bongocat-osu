@@ -1,5 +1,4 @@
 #include "header.hpp"
-#define BONGO_KEYPRESS_THRESHOLD 0.031
 
 namespace osu {
 Json::Value left_key_value, right_key_value, smoke_key_value, wave_key_value;
@@ -20,6 +19,7 @@ double timer_left_key = -1;
 double timer_right_key = -1;
 double timer_wave_key = -1;
 
+// bezier curve for osu and custom
 std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length) {
     double fact[22] = {0.001, 0.001, 0.002, 0.006, 0.024, 0.12, 0.72, 5.04, 40.32, 362.88, 3628.8, 39916.8, 479001.6, 6227020.8, 87178291.2, 1307674368.0, 20922789888.0, 355687428096.0, 6402373705728.0, 121645100408832.0, 2432902008176640.0, 51090942171709440.0};
     int nn = (length / 2) - 1;
@@ -37,37 +37,39 @@ std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int
 
 bool init() {
     // getting configs
-    is_mouse = data::cfg["osu"]["mouse"].asBool();
+    Json::Value osu = data::cfg["osu"];
 
-    paw_r = data::cfg["osu"]["paw"][0].asInt();
-    paw_g = data::cfg["osu"]["paw"][1].asInt();
-    paw_b = data::cfg["osu"]["paw"][2].asInt();
+    is_mouse = osu["mouse"].asBool();
 
-    paw_edge_r = data::cfg["osu"]["pawEdge"][0].asInt();
-    paw_edge_g = data::cfg["osu"]["pawEdge"][1].asInt();
-    paw_edge_b = data::cfg["osu"]["pawEdge"][2].asInt();
+    paw_r = osu["paw"][0].asInt();
+    paw_g = osu["paw"][1].asInt();
+    paw_b = osu["paw"][2].asInt();
+
+    paw_edge_r = osu["pawEdge"][0].asInt();
+    paw_edge_g = osu["pawEdge"][1].asInt();
+    paw_edge_b = osu["pawEdge"][2].asInt();
 
     bool chk[256];
     std::fill(chk, chk + 256, false);
-    left_key_value = data::cfg["osu"]["key1"];
+    left_key_value = osu["key1"];
     for (Json::Value &v : left_key_value) {
         chk[v.asInt()] = true;
     }
-    right_key_value = data::cfg["osu"]["key2"];
+    right_key_value = osu["key2"];
     for (Json::Value &v : right_key_value) {
         if (chk[v.asInt()]) {
             data::error_msg("Overlapping osu! keybinds", "Error reading configs");
             return false;
         }
     }
-    wave_key_value = data::cfg["osu"]["wave"];
+    wave_key_value = osu["wave"];
     for (Json::Value &v : wave_key_value) {
         if (chk[v.asInt()]) {
             data::error_msg("Overlapping osu! keybinds", "Error reading configs");
             return false;
         }
     }
-    smoke_key_value = data::cfg["osu"]["smoke"];
+    smoke_key_value = osu["smoke"];
 
     is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
     osu_x = data::cfg["resolution"]["width"].asInt();

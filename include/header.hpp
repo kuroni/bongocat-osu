@@ -1,4 +1,5 @@
 #pragma once
+#define BONGO_KEYPRESS_THRESHOLD 0.031
 
 #include <iostream>
 #include <fstream>
@@ -50,3 +51,9 @@ bool init();
 
 void draw();
 }; // namespace mania
+
+namespace custom {
+bool init();
+
+void draw();
+}; // namespace custom
