@@ -6,7 +6,7 @@ int osu_x, osu_y, osu_h, osu_v;
 int offset_x, offset_y;
 int horizontal, vertical;
 int paw_r, paw_g, paw_b, paw_a;
-int paw_edge_r, paw_edge_g, paw_edge_b;
+int paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a;
 double scale;
 bool is_mouse, is_letterbox, is_left_handed, is_enable_toggle_smoke;
 sf::Sprite bg, up, left, right, device, smoke, wave;
@@ -53,6 +53,7 @@ bool init() {
     paw_edge_r = osu["pawEdge"][0].asInt();
     paw_edge_g = osu["pawEdge"][1].asInt();
     paw_edge_b = osu["pawEdge"][2].asInt();
+    paw_edge_a = osu["pawEdge"].size() == 3 ? 255 : osu["pawEdge"][3].asInt();
 
     bool chk[256];
     std::fill(chk, chk + 256, false);
@@ -259,7 +260,7 @@ void draw() {
     window.draw(fill);
 
     // drawing first arm arc
-    int shad = 77;
+    int shad = paw_edge_a / 3;
     sf::VertexArray edge(sf::TriangleStrip, 52);
     double width = 7;
     sf::CircleShape circ(width / 2);
@@ -292,7 +293,7 @@ void draw() {
     sf::VertexArray edge2(sf::TriangleStrip, 52);
     width = 6;
     sf::CircleShape circ2(width / 2);
-    circ2.setFillColor(sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255));
+    circ2.setFillColor(sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a));
     circ2.setPosition(pss2[0] - width / 2, pss2[1] - width / 2);
     window.draw(circ2);
     for (int i = 0; i < 50; i += 2) {
@@ -301,8 +302,8 @@ void draw() {
         double dist = hypot(vec0, vec1);
         edge2[i].position = sf::Vector2f(pss2[i] + vec1 / dist * width / 2, pss2[i + 1] - vec0 / dist * width / 2);
         edge2[i + 1].position = sf::Vector2f(pss2[i] - vec1 / dist * width / 2, pss2[i + 1] + vec0 / dist * width / 2);
-        edge2[i].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255);
-        edge2[i + 1].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255);
+        edge2[i].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a);
+        edge2[i + 1].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a);
         width -= 0.08;
     }
     vec0 = pss2[50] - pss2[48];
@@ -310,8 +311,8 @@ void draw() {
     dist = hypot(vec0, vec1);
     edge2[51].position = sf::Vector2f(pss2[50] + vec1 / dist * width / 2, pss2[51] - vec0 / dist * width / 2);
     edge2[50].position = sf::Vector2f(pss2[50] - vec1 / dist * width / 2, pss2[51] + vec0 / dist * width / 2);
-    edge2[50].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255);
-    edge2[51].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, 255);
+    edge2[50].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a);
+    edge2[51].color = sf::Color(paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a);
     window.draw(edge2);
     circ2.setRadius(width / 2);
     circ2.setPosition(pss2[50] - width / 2, pss2[51] - width / 2);
