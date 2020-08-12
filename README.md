@@ -38,6 +38,7 @@ You need to have these dependencies installed. Check with your package manager f
 - sfml
 - x11
 - xrandr
+
 Then, copy `Makefile.linux` to `Makefile`.
 
 ### Building and testing
