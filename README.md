@@ -5,11 +5,11 @@ You can find how to configure the application in our [wiki](https://github.com/k
 
 Releases can be found [here](https://github.com/kuroni/bongocat-osu/releases).
 
-Hugs and kisses to [u/CSaratakij] for creating the Linux port for this project!
+Hugs and kisses to [CSaratakij](https://github.com/CSaratakij) for creating the Linux port for this project!
 
 Any suggestion and/or collaboration, especially that relating to sprites, is welcomed! Thank you!
 
-[Original post](https://www.reddit.com/r/osugame/comments/9hrkte/i_know_bongo_cat_is_getting_old_but_heres_a_nicer/) by [u/Kuvster](https://github.com/Kuvster).
+[Original post](https://www.reddit.com/r/osugame/comments/9hrkte/i_know_bongo_cat_is_getting_old_but_heres_a_nicer/) by [Kuvster](https://github.com/Kuvster).
 
 ## Further information
 In order to play with fullscreen on Windows 10, run both osu! and this application in Windows 7 compability mode.
