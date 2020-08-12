@@ -5,6 +5,8 @@ You can find how to configure the application in our [wiki](https://github.com/k
 
 Releases can be found [here](https://github.com/kuroni/bongocat-osu/releases).
 
+Hugs and kisses to [u/CSaratakij] for creating the Linux port for this project!
+
 Any suggestion and/or collaboration, especially that relating to sprites, is welcomed! Thank you!
 
 [Original post](https://www.reddit.com/r/osugame/comments/9hrkte/i_know_bongo_cat_is_getting_old_but_heres_a_nicer/) by [u/Kuvster](https://github.com/Kuvster).
@@ -23,19 +25,35 @@ _Notice_: If you're using WINE on Linux, make sure that osu! and this applicatio
 ## For developers
 This project uses [SFML](https://www.sfml-dev.org/index.php) and [JsonCpp](https://github.com/open-source-parsers/jsoncpp). JsonCpp libraries are directly included in the source using the provided `amalgamation.py` from the developers.
 
-To build the source, download the SFML libraries, duplicate `Makefile.demo` to `Makefile`, then replace *`<SFML-folder>`* in `Makefile` with the desired folder, and run these commands from the base directory:
+### Libraries and dependency
 
-```
-mkdir bin
+#### Windows and MinGW
+To build the source, download the SFML libraries [here](https://www.sfml-dev.org/index.php), copy `Makefile.windows` to `Makefile`, then replace *`<SFML-folder>`* in `Makefile` with the desired folder.
+
+#### Linux
+You need to have these dependencies installed. Check with your package manager for the exact name of these dependencies on your distro:
+- g++
+- libxdo
+- sdl2
+- sfml
+- x11
+- xrandr
+Then, copy `Makefile.linux` to `Makefile`.
+
+### Building and testing
+To build, run this command from the base directory:
+
+```sh
 make
 ```
 
-To test the program run this from the base directory:
+To test the program, run this from the base directory:
 
-```
+```sh
 make test
 ```
 
-Alternatively, you can copy the newly-compiled `bin/bongocat.exe` into the base directory and execute it.
+Alternatively, you can copy the newly-compiled `bin/bongocat.exe` or `bin/bongo` into the base directory and execute it.
 
 If you have troubles compiling, it can be due to version mismatch between your compiler and SFML. See [#43](https://github.com/kuroni/bongocat-osu/issues/43) for more information.
+

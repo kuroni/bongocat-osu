@@ -1,12 +1,33 @@
 #include "header.hpp"
 
+#if defined(__unix__) || defined(__unix)
+#include <X11/Xlib.h>
+#include <X11/extensions/Xrandr.h>
+#else
+#include <windows.h>
+#endif
+
 sf::RenderWindow window;
 
+#if defined(__unix__) || defined(__unix)
+int main(int argc, char ** argv) {
+#else
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+#endif
 
     window.create(sf::VideoMode(612, 352), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
 
     // get refresh rate and set the frame limit
+#if defined(__unix__) || defined(__unix)
+    Display *dpy = XOpenDisplay(NULL);
+    Window root = RootWindow(dpy, 0);
+
+    XRRScreenConfiguration *conf = XRRGetScreenInfo(dpy, root);
+    short refresh_rate = XRRConfigCurrentRate(conf);
+
+    XCloseDisplay(dpy);
+    window.setFramerateLimit(refresh_rate);
+#else
     DISPLAY_DEVICE device;
     ZeroMemory(&device, sizeof(device));
     device.cb = sizeof(device);
@@ -16,11 +37,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     devmode.dmSize = sizeof(DEVMODE);
     EnumDisplaySettings((LPSTR)device.DeviceName, ENUM_REGISTRY_SETTINGS, &devmode);
     window.setFramerateLimit(devmode.dmDisplayFrequency);
+#endif
 
     // loading configs
     while (!data::init()) {
         continue;
     }
+
+    // initialize input
+    input::init();
 
     bool is_reload = false;
 
@@ -77,5 +102,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         window.display();
     }
 
+    osu::cleanup();
     return 0;
 }
