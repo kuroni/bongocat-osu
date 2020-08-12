@@ -26,5 +26,5 @@ test:
 	bin/bongo
 
 clean:
-	rm $(OBJ)
+	rm $(OBJ) || true
 

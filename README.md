@@ -54,7 +54,7 @@ To test the program, run this from the base directory:
 make test
 ```
 
-Alternatively, you can copy the newly-compiled `bin/bongocat.exe` or `bin/bongo` into the base directory and execute it.
+Alternatively, you can copy the newly-compiled `bin/bongo.exe` or `bin/bongo` into the base directory and execute it.
 
 If you have troubles compiling, it can be due to version mismatch between your compiler and SFML. See [#43](https://github.com/kuroni/bongocat-osu/issues/43) for more information.
 

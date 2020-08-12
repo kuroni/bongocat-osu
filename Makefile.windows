@@ -31,4 +31,5 @@ test:
 	bin/bongo.exe
 
 clean:
-	rm $(OBJ)
+	rm $(OBJ) || true
+	rm ico/ico.res || true
