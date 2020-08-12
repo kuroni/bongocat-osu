@@ -1,5 +1,16 @@
 #include "header.hpp"
 
+#if defined(__unix__) || defined(__unix)
+#include <X11/Xlib.h>
+#include <X11/extensions/Xrandr.h>
+
+extern "C" {
+#include <xdo.h>
+}
+#else
+#include <windows.h>
+#endif
+
 namespace osu {
 Json::Value left_key_value, right_key_value, smoke_key_value, wave_key_value;
 int osu_x, osu_y, osu_h, osu_v;
@@ -12,6 +23,7 @@ bool is_mouse, is_letterbox, is_left_handed, is_enable_toggle_smoke;
 sf::Sprite bg, up, left, right, device, smoke, wave;
 
 int key_state = 0;
+
 bool left_key_state = false;
 bool right_key_state = false;
 bool wave_key_state = false;
@@ -21,6 +33,15 @@ bool is_toggle_smoke = false;
 double timer_left_key = -1;
 double timer_right_key = -1;
 double timer_wave_key = -1;
+
+#if defined(__unix__) || defined(__unix)
+xdo_t* xdo;
+Window foreground_window;
+
+static int _XlibErrorHandler(Display *display, XErrorEvent *event) {
+    return true;
+}
+#endif
 
 // bezier curve for osu and custom
 std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length) {
@@ -109,17 +130,160 @@ bool init() {
     smoke.setTexture(data::load_texture("img/osu/smoke.png"));
     device.setScale(scale, scale);
 
+#if defined(__unix__) || defined(__unix)
+    // Set x11 error handler
+    XSetErrorHandler(_XlibErrorHandler);
+
+    // Get desktop resolution
+    int num_sizes;
+    Rotation current_rotation;
+
+    Display *dpy = XOpenDisplay(NULL);
+    Window root = RootWindow(dpy, 0);
+    XRRScreenSize *xrrs = XRRSizes(dpy, 0, &num_sizes);
+
+    XRRScreenConfiguration *conf = XRRGetScreenInfo(dpy, root);
+    SizeID current_size_id = XRRConfigCurrentConfiguration(conf, &current_rotation);
+
+    int current_width = xrrs[current_size_id].width;
+    int current_height = xrrs[current_size_id].height;
+
+    XCloseDisplay(dpy);
+
+    horizontal = current_width;
+    vertical = current_height;
+
+    xdo = xdo_new(NULL);
+#else
     // getting resolution
     RECT desktop;
     const HWND h_desktop = GetDesktopWindow();
     GetWindowRect(h_desktop, &desktop);
     horizontal = desktop.right;
     vertical = desktop.bottom;
+#endif
 
     return true;
 }
 
-void draw() {
+std::pair<double, double> get_xy() {
+#if defined(__unix__) || defined(__unix)
+    double letter_x, letter_y, s_height, s_width;
+    bool found_window = (xdo_get_focused_window_sane(xdo, &foreground_window) == 0);
+
+    if (found_window) {
+        unsigned char* name_ret;
+        int name_len_ret;
+        int name_type;
+
+        xdo_get_window_name(xdo, foreground_window, &name_ret, &name_len_ret, &name_type);
+        bool can_get_name = (name_len_ret > 0);
+
+        if (can_get_name) {
+
+            std::string title = "";
+
+            if (name_ret != NULL)
+            {
+                std::string foreground_title(reinterpret_cast<char*>(name_ret));
+                title = foreground_title;
+            }
+
+            if (title.find("osu!") == 0) {
+                if (!is_letterbox) {
+
+                    int x_ret;
+                    int y_ret;
+                    unsigned int width_ret;
+                    unsigned int height_ret;
+
+                    bool can_get_location = (xdo_get_window_location(xdo, foreground_window, &x_ret, &y_ret, NULL) == 0);
+                    bool can_get_size = (xdo_get_window_size(xdo, foreground_window, &width_ret, &height_ret) == 0);
+
+                    bool can_get_rect = (can_get_location && can_get_size);
+
+                    bool is_fullscreen_window = (horizontal == width_ret) && (vertical == height_ret);
+                    bool should_not_resize_screen = (!can_get_rect || is_fullscreen_window);
+
+                    if (should_not_resize_screen) {
+                        s_width = horizontal;
+                        s_height = vertical;
+
+                        letter_x = 0;
+                        letter_y = 0;
+                    }
+                    else {
+                        s_height = osu_y * 0.8;
+                        s_width = s_height * 4 / 3;
+
+                        long left = x_ret;
+                        long top = y_ret;
+                        long right = left + width_ret;
+                        long bottom = top + height_ret;
+
+                        letter_x = left + ((right - left) - s_width) / 2;
+                        letter_y = top + osu_y * 0.117;
+                    }
+                }
+                else {
+                    s_height = osu_y * 0.8;
+                    s_width = s_height * 4 / 3;
+
+                    double l = (horizontal - osu_x) * (osu_h + 100) / 200.0;
+                    double r = l + osu_x;
+                    letter_x = l + ((r - l) - s_width) / 2;
+                    letter_y = (vertical - osu_y) * (osu_v + 100) / 200.0 + osu_y * 0.117;
+                }
+            }
+            else {
+                s_width = horizontal;
+                s_height = vertical;
+                letter_x = 0;
+                letter_y = 0;
+            }
+        }
+        else {
+            s_width = horizontal;
+            s_height = vertical;
+            letter_x = 0;
+            letter_y = 0;
+        }
+    }
+    else {
+        s_width = horizontal;
+        s_height = vertical;
+        letter_x = 0;
+        letter_y = 0;
+    }
+
+    double x = 0, y = 0;
+    int px = 0, py = 0;
+
+    if (xdo_get_mouse_location(xdo, &px, &py, NULL) == 0) {
+
+        if (!is_letterbox) {
+            letter_x = floor(1.0 * px / osu_x) * osu_x;
+            letter_y = floor(1.0 * py / osu_y) * osu_y;
+        }
+
+        double fx = (1.0 * px - letter_x) / s_width;
+
+        if (is_left_handed) {
+            fx = 1 - fx;
+        }
+
+        double fy = (1.0 * py - letter_y) / s_height;
+
+        fx = std::min(fx, 1.0);
+        fx = std::max(fx, 0.0);
+
+        fy = std::min(fy, 1.0);
+        fy = std::max(fy, 0.0);
+
+        x = -97 * fx + 44 * fy + 184;
+        y = -76 * fx - 40 * fy + 324;
+    }
+#else
     // getting device resolution
     double letter_x, letter_y, s_height, s_width;
 
@@ -173,6 +337,14 @@ void draw() {
         x = -97 * fx + 44 * fy + 184;
         y = -76 * fx - 40 * fy + 324;
     }
+#endif
+
+    return std::make_pair(x, y);
+}
+
+void draw() {
+    auto [x, y] = get_xy();
+
     window.draw(bg);
 
     // initializing pss and pss2 (kuvster's magic)
@@ -320,12 +492,14 @@ void draw() {
 
     // drawing keypresses
     bool left_key = false;
+
     for (Json::Value &v : left_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             left_key = true;
             break;
         }
     }
+
     if (left_key) {
         if (!left_key_state) {
             key_state = 1;
@@ -336,12 +510,14 @@ void draw() {
     }
 
     bool right_key = false;
+
     for (Json::Value &v : right_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             right_key = true;
             break;
         }
     }
+
     if (right_key) {
         if (!right_key_state) {
             key_state = 2;
@@ -352,12 +528,14 @@ void draw() {
     }
     
     bool wave_key = false;
+
     for (Json::Value &v : wave_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             wave_key = true;
             break;
         }
     }
+
     if (wave_key) {
         if (!wave_key_state) {
             key_state = 3;
@@ -371,6 +549,7 @@ void draw() {
         key_state = 0;
         window.draw(up);
     }
+
     if (key_state == 1) {
         if ((clock() - std::max(timer_right_key, timer_wave_key)) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
             if (!is_left_handed) {
@@ -411,7 +590,7 @@ void draw() {
     bool is_smoke_key_pressed = false;
 
     for (Json::Value &v : smoke_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             is_smoke_key_pressed = true;
             break;
         }
@@ -434,5 +613,11 @@ void draw() {
     if (is_toggle_smoke) {
         window.draw(smoke);
     }
+}
+
+void cleanup() {
+#if defined(__unix__) || defined(__unix)
+    delete xdo;
+#endif
 }
 }; // namespace osu

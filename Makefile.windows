@@ -10,7 +10,9 @@ INCFLAGS := -I<SFML-folder>/include -Iinclude
 LIBFLAGS := -L<SFML-folder>/lib
 DEFINES := -DSFML_STATIC
 
-.PHONY: test clean
+.PHONY: test create clean
+
+all: create bin/bongo.exe
 
 bin/bongo.exe: $(OBJ) $(ICO)
 	$(CXX) -o $@ $^ $(DEFINES) $(INCFLAGS) $(LIBFLAGS) $(CXXFLAGS) $(LDFLAGS)
@@ -20,6 +22,10 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 $(ICODIR)/ico.res: $(ICODIR)/ico.rc
 	windres -O coff -o $@ $^
+
+create:
+	mkdir -p $(OBJDIR)
+	mkdir -p bin
 
 test:
 	bin/bongo.exe

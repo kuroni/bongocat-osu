@@ -60,7 +60,7 @@ void draw() {
     for (int i = 0; i < 2; i++) {
         bool rim_key = false;
         for (Json::Value &v : rim_key_value[i]) {
-            if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+            if (input::is_pressed(v.asInt())) {
                 rim_key = true;
                 break;
             }
@@ -76,7 +76,7 @@ void draw() {
 
         bool centre_key = false;
         for (Json::Value &v : centre_key_value[i]) {
-            if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+            if (input::is_pressed(v.asInt())) {
                 centre_key = true;
                 break;
             }

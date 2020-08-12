@@ -46,7 +46,7 @@ void draw() {
     // drawing left-right keypresses
     bool left_key = false;
     for (Json::Value &v : left_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             left_key = true;
             break;
         }
@@ -62,7 +62,7 @@ void draw() {
 
     bool right_key = false;
     for (Json::Value &v : right_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             right_key = true;
             break;
         }
@@ -98,7 +98,7 @@ void draw() {
 
     bool is_dash = false;
     for (Json::Value &v : dash_key_value) {
-        if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+        if (input::is_pressed(v.asInt())) {
             window.draw(dash);
             is_dash = true;
             break;

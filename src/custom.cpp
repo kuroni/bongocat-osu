@@ -28,7 +28,7 @@ struct key {
 
     bool is_pressed() {
         for (Json::Value &v : key_value) {
-            if (GetKeyState(v.asInt()) & WM_KEYDOWN) {
+            if (input::is_pressed(v.asInt())) {
                 return true;
             }
         }
