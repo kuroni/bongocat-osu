@@ -76,5 +76,20 @@ bool is_pressed(int key_code) {
     return sf::Keyboard::isKeyPressed(ascii_to_key(key_code));
 }
 
+// bezier curve for osu and custom
+std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length) {
+    double fact[22] = {0.001, 0.001, 0.002, 0.006, 0.024, 0.12, 0.72, 5.04, 40.32, 362.88, 3628.8, 39916.8, 479001.6, 6227020.8, 87178291.2, 1307674368.0, 20922789888.0, 355687428096.0, 6402373705728.0, 121645100408832.0, 2432902008176640.0, 51090942171709440.0};
+    int nn = (length / 2) - 1;
+    double xx = 0;
+    double yy = 0;
+
+    for (int point = 0; point <= nn; point++) {
+        double tmp = fact[nn] / (fact[point] * fact[nn - point]) * pow(ratio, point) * pow(1 - ratio, nn - point);
+        xx += points[2 * point] * tmp;
+        yy += points[2 * point + 1] * tmp;
+    }
+
+    return std::make_tuple(xx / 1000, yy / 1000);
+}
 };
 

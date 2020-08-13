@@ -43,22 +43,6 @@ static int _XlibErrorHandler(Display *display, XErrorEvent *event) {
 }
 #endif
 
-// bezier curve for osu and custom
-std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length) {
-    double fact[22] = {0.001, 0.001, 0.002, 0.006, 0.024, 0.12, 0.72, 5.04, 40.32, 362.88, 3628.8, 39916.8, 479001.6, 6227020.8, 87178291.2, 1307674368.0, 20922789888.0, 355687428096.0, 6402373705728.0, 121645100408832.0, 2432902008176640.0, 51090942171709440.0};
-    int nn = (length / 2) - 1;
-    double xx = 0;
-    double yy = 0;
-
-    for (int point = 0; point <= nn; point++) {
-        double tmp = fact[nn] / (fact[point] * fact[nn - point]) * pow(ratio, point) * pow(1 - ratio, nn - point);
-        xx += points[2 * point] * tmp;
-        yy += points[2 * point + 1] * tmp;
-    }
-
-    return std::make_tuple(xx / 1000, yy / 1000);
-}
-
 bool init() {
     // getting configs
     Json::Value osu = data::cfg["osu"];
@@ -355,7 +339,7 @@ void draw() {
     double centreleft1 = 159 + 0.69 * dist / 2;
     for (int i = 1; i < oof; i++) {
         std::vector<double> bez = {211, 159, centreleft0, centreleft1, x, y};
-        auto [p0, p1] = bezier(1.0 * i / oof, bez, 6);
+        auto [p0, p1] = input::bezier(1.0 * i / oof, bez, 6);
         pss.push_back(p0);
         pss.push_back(p1);
     }
@@ -384,7 +368,7 @@ void draw() {
     t2 *= push / le;
     for (int i = 1; i < oof; i++) {
         std::vector<double> bez = {x, y, x + s, y + t, a + s2, b + t2, a, b};
-        auto [p0, p1] = bezier(1.0 * i / oof, bez, 8);
+        auto [p0, p1] = input::bezier(1.0 * i / oof, bez, 8);
         pss.push_back(p0);
         pss.push_back(p1);
     }
@@ -392,7 +376,7 @@ void draw() {
     pss.push_back(b);
     for (int i = oof - 1; i > 0; i--) {
         std::vector<double> bez = {1.0 * a1, 1.0 * a2, centreright0, centreright1, a, b};
-        auto [p0, p1] = bezier(1.0 * i / oof, bez, 6);
+        auto [p0, p1] = input::bezier(1.0 * i / oof, bez, 6);
         pss.push_back(p0);
         pss.push_back(p1);
     }
@@ -407,7 +391,7 @@ void draw() {
 
     std::vector<double> pss2 = {pss[0] + dx, pss[1] + dy};
     for (int i = 1; i < iter; i++) {
-        auto [p0, p1] = bezier(1.0 * i / iter, pss, 38);
+        auto [p0, p1] = input::bezier(1.0 * i / iter, pss, 38);
         pss2.push_back(p0 + dx);
         pss2.push_back(p1 + dy);
     }

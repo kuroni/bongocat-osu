@@ -68,6 +68,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
                     is_reload = true;
                     break;
                 }
+
             default:
                 is_reload = false;
             }

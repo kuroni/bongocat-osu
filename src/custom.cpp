@@ -89,7 +89,7 @@ struct key_container {
         if (key_state > -1) {
             key& on_key = keys[key_state];
             double last_press = -1;
-            for (int i = 0; i < keys.size(); i++) {
+            for (int i = 0; i < (int)keys.size(); i++) {
                 if (i != key_state) {
                     last_press = std::max(last_press, keys[i].timer);
                 }
