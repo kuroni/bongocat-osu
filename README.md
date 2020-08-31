@@ -1,3 +1,5 @@
+/!\ I'm aware of the bug occuring in custom mode making the mouse teleporting arround while in game in osu and I will try to fix that /!\
+
 # Description
 An osu! Bongo Cat overlay with smooth paw movement and simple skinning ability, written in C++.
 
