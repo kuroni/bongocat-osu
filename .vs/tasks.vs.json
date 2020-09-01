@@ -1,0 +1,15 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "tâche-Makefile",
+      "appliesTo": "Makefile",
+      "type": "launch"
+    },
+    {
+      "taskLabel": "tâche-CppProperties_schema",
+      "appliesTo": "../../AppData/Local/Microsoft/VisualStudio/16.0_2ec3cbed/OpenFolder/CppProperties_schema.json",
+      "type": "launch"
+    }
+  ]
+}

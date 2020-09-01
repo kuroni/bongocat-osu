@@ -6,8 +6,8 @@ OBJ := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
 ICO := $(ICODIR)/ico.res
 CXXFLAGS := -std=c++17 -s -O2 -mwindows
 LDFLAGS := -lsfml-graphics-s -lsfml-window-s -lsfml-system-s -lopengl32 -lfreetype -lwinmm -lgdi32 -static-libgcc -static-libstdc++ -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic
-INCFLAGS := -I<SFML-folder>/include -Iinclude
-LIBFLAGS := -L<SFML-folder>/lib
+INCFLAGS := -IC:/SFML-2.5.1/include -Iinclude
+LIBFLAGS := -LC:/SFML-2.5.1/lib
 DEFINES := -DSFML_STATIC
 
 .PHONY: test create clean

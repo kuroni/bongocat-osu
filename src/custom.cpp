@@ -126,7 +126,7 @@ sf::Sprite bg;
     int paw_r, paw_g, paw_b, paw_a;
     int paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a;
     double scale;
-    bool is_mouse;
+    bool is_mouse, is_letterbox;
     sf::Sprite device;
     //adding the mouse//
 
@@ -162,6 +162,12 @@ bool init() {
     paw_edge_g = osu["pawEdge"][1].asInt();
     paw_edge_b = osu["pawEdge"][2].asInt();
     paw_edge_a = osu["pawEdge"].size() == 3 ? 255 : osu["pawEdge"][3].asInt();
+
+    is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
+    osu_x = data::cfg["resolution"]["width"].asInt();
+    osu_y = data::cfg["resolution"]["height"].asInt();
+    osu_h = data::cfg["resolution"]["horizontalPosition"].asInt();
+    osu_v = data::cfg["resolution"]["verticalPosition"].asInt();
 
     if (is_mouse) {
         offset_x = (data::cfg["decoration"]["offsetX"])[0].asInt();
@@ -376,6 +382,12 @@ std::pair<double, double> get_xy() {
     double x, y;
     POINT point;
     if (GetCursorPos(&point)) {
+
+            if (!is_letterbox) {
+                letter_x = floor((double)point.x / osu_x) * osu_x;
+                letter_y = floor((double)point.y / osu_y) * osu_y;
+            }
+
         double fx = (1.0 * point.x - letter_x) / s_width;
         double fy = (1.0 * point.y - letter_y) / s_height;
         fx = std::min(fx, 1.0);

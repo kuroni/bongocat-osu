@@ -1,13 +1,9 @@
-/!\ I'm aware of the bug occuring in custom mode making the mouse teleporting arround while in game in osu and I will try to fix that /!\
-
 # Description
 An osu! Bongo Cat overlay with smooth paw movement and simple skinning ability, written in C++.
 
 You can find how to configure the application in our [wiki](https://github.com/kuroni/bongocat-osu/wiki/Settings).
 
-Download the original program [here](https://github.com/kuroni/bongocat-osu/releases).
-
-Download my modified verion [here](https://github.com/Rocksfire/bongocat-osu/releases/tag/v1.5.1)
+Download the program [here](https://github.com/kuroni/bongocat-osu/releases).
 
 Hugs and kisses to [CSaratakij](https://github.com/CSaratakij) for creating the Linux port for this project!
 
