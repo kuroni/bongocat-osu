@@ -3,9 +3,7 @@ An osu! Bongo Cat overlay with smooth paw movement and simple skinning ability, 
 
 You can find how to configure the application in our [wiki](https://github.com/kuroni/bongocat-osu/wiki/Settings).
 
-Download the original program [here](https://github.com/kuroni/bongocat-osu/releases).
-
-Download my modified verion [here](https://github.com/Rocksfire/bongocat-osu/releases)
+Download the program [here](https://github.com/kuroni/bongocat-osu/releases).
 
 Hugs and kisses to [CSaratakij](https://github.com/CSaratakij) for creating the Linux port for this project!
 
