@@ -73,7 +73,15 @@ sf::Keyboard::Key ascii_to_key(int key_code) {
 }
 
 bool is_pressed(int key_code) {
-    return sf::Keyboard::isKeyPressed(ascii_to_key(key_code));
+    if (key_code == 16) {
+        return sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
+            || sf::Keyboard::isKeyPressed(sf::Keyboard::RShift);
+    } else if (key_code == 17) {
+        return sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
+            || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl);
+    } else {
+        return sf::Keyboard::isKeyPressed(ascii_to_key(key_code));
+    }
 }
 
 // bezier curve for osu and custom
