@@ -103,6 +103,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         window.display();
     }
 
-    osu::cleanup();
+    input::cleanup();
     return 0;
 }
