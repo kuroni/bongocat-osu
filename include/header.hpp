@@ -33,15 +33,17 @@ void init();
 
 bool is_pressed(int key_code);
 
-std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length);
+std::pair<double, double> bezier(double ratio, std::vector<double> &points, int length);
+
+std::pair<double, double> get_xy();
+
+void cleanup();
 }; // namespace input
 
 namespace osu {
 bool init();
 
 void draw();
-
-void cleanup();
 }; // namespace osu
 
 namespace taiko {

@@ -61,6 +61,8 @@ void create_config() {
         "key7K": [83, 68, 70, 32, 74, 75, 76]
     },
     "custom": {
+        "mouse": false,
+        "paw": [255, 255, 255],
         "keyContainers": []
     }
 })V0G0N";
