@@ -16,6 +16,8 @@ extern "C" {
 
 namespace input {
 int horizontal, vertical;
+int osu_x, osu_y, osu_h, osu_v;
+bool is_letterbox, is_left_handed;
 
 #if defined(__unix__) || defined(__unix)
 xdo_t* xdo;
@@ -83,6 +85,13 @@ void init() {
     INPUT_KEY_TABLE[19] = (int)sf::Keyboard::Key::Pause;
     INPUT_KEY_TABLE[189] = (int)sf::Keyboard::Key::Dash;
 
+    is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
+    osu_x = data::cfg["resolution"]["width"].asInt();
+    osu_y = data::cfg["resolution"]["height"].asInt();
+    osu_h = data::cfg["resolution"]["horizontalPosition"].asInt();
+    osu_v = data::cfg["resolution"]["verticalPosition"].asInt();
+    is_left_handed = data::cfg["decoration"]["leftHanded"].asBool();
+
 #if defined(__unix__) || defined(__unix)
     // Set x11 error handler
     XSetErrorHandler(_XlibErrorHandler);
@@ -139,7 +148,7 @@ bool is_pressed(int key_code) {
 }
 
 // bezier curve for osu and custom
-std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int length) {
+std::pair<double, double> bezier(double ratio, std::vector<double> &points, int length) {
     double fact[22] = {0.001, 0.001, 0.002, 0.006, 0.024, 0.12, 0.72, 5.04, 40.32, 362.88, 3628.8, 39916.8, 479001.6, 6227020.8, 87178291.2, 1307674368.0, 20922789888.0, 355687428096.0, 6402373705728.0, 121645100408832.0, 2432902008176640.0, 51090942171709440.0};
     int nn = (length / 2) - 1;
     double xx = 0;
@@ -151,7 +160,7 @@ std::tuple<double, double> bezier(double ratio, std::vector<double> &points, int
         yy += points[2 * point + 1] * tmp;
     }
 
-    return std::make_tuple(xx / 1000, yy / 1000);
+    return std::make_pair(xx / 1000, yy / 1000);
 }
 
 std::pair<double, double> get_xy() {

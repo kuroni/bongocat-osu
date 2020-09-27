@@ -2,12 +2,11 @@
 
 namespace osu {
 Json::Value left_key_value, right_key_value, smoke_key_value, wave_key_value;
-int osu_x, osu_y, osu_h, osu_v;
 int offset_x, offset_y;
 int paw_r, paw_g, paw_b, paw_a;
 int paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a;
 double scale;
-bool is_mouse, is_letterbox, is_left_handed, is_enable_toggle_smoke;
+bool is_mouse, is_left_handed, is_enable_toggle_smoke;
 sf::Sprite bg, up, left, right, device, smoke, wave;
 
 int key_state = 0;
@@ -61,11 +60,6 @@ bool init() {
     }
     smoke_key_value = osu["smoke"];
 
-    is_letterbox = data::cfg["resolution"]["letterboxing"].asBool();
-    osu_x = data::cfg["resolution"]["width"].asInt();
-    osu_y = data::cfg["resolution"]["height"].asInt();
-    osu_h = data::cfg["resolution"]["horizontalPosition"].asInt();
-    osu_v = data::cfg["resolution"]["verticalPosition"].asInt();
     is_left_handed = data::cfg["decoration"]["leftHanded"].asBool();
 
     if (is_mouse) {
