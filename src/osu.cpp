@@ -91,11 +91,10 @@ bool init() {
 }
 
 void draw() {
-    auto [x, y] = input::get_xy();
-
     window.draw(bg);
 
     // initializing pss and pss2 (kuvster's magic)
+    auto [x, y] = input::get_xy();
     int oof = 6;
     std::vector<double> pss = {211.0, 159.0};
     double dist = hypot(211 - x, 159 - y);

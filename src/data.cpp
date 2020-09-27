@@ -62,7 +62,12 @@ void create_config() {
     },
     "custom": {
         "mouse": false,
+        "mouseOnTop": true,
+        "offsetX": 0,
+        "offsetY": 0,
+        "scalar": 1.0,
         "paw": [255, 255, 255],
+        "pawEdge": [0, 0, 0],
         "keyContainers": []
     }
 })V0G0N";
