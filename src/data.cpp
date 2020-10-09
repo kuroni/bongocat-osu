@@ -29,7 +29,7 @@ void create_config() {
     },
     "decoration": {
         "leftHanded": false,
-        "rgb": [255, 255, 255],
+        "rgb": [134, 120, 187],
         "offsetX": [0, 11],
         "offsetY": [0, -65],
         "scalar": [1.0, 1.0]
@@ -66,7 +66,7 @@ void create_config() {
         "offsetX": 0,
         "offsetY": 0,
         "scalar": 1.0,
-        "paw": [255, 255, 255],
+        "paw": [134, 120, 187],
         "pawEdge": [0, 0, 0],
         "keyContainers": []
     }
