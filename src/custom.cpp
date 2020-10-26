@@ -144,7 +144,7 @@ bool init() {
             paw_edge_a = custom["pawEdge"].size() == 3 ? 255 : custom["pawEdge"][3].asInt();
 
             if (!custom.isMember("mouseImage") || !custom["mouseImage"].isString()) {
-                data::error_msg("Custom background not found", "Error reading config");
+                data::error_msg("Mouse image not found", "Error reading config");
                 return false;
             }
             mouse.setTexture(data::load_texture(custom["mouseImage"].asString()));

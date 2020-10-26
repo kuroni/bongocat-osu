@@ -4,6 +4,7 @@
 #if defined(__unix__) || defined(__unix)
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
+#include <X11/keysym.h>
 
 extern "C" {
 #include <xdo.h>
@@ -21,6 +22,7 @@ bool is_letterbox, is_left_handed;
 
 #if defined(__unix__) || defined(__unix)
 xdo_t* xdo;
+Display* dpy;
 Window foreground_window;
 
 static int _XlibErrorHandler(Display *display, XErrorEvent *event) {
@@ -100,7 +102,7 @@ void init() {
     int num_sizes;
     Rotation current_rotation;
 
-    Display *dpy = XOpenDisplay(NULL);
+    dpy = XOpenDisplay(NULL);
     Window root = RootWindow(dpy, 0);
     XRRScreenSize *xrrs = XRRSizes(dpy, 0, &num_sizes);
 
@@ -109,8 +111,6 @@ void init() {
 
     int current_width = xrrs[current_size_id].width;
     int current_height = xrrs[current_size_id].height;
-
-    XCloseDisplay(dpy);
 
     horizontal = current_width;
     vertical = current_height;
@@ -135,6 +135,23 @@ sf::Keyboard::Key ascii_to_key(int key_code) {
     }
 }
 
+// for some special cases of num dot and such
+bool is_pressed_fallback(int key_code) {
+#if defined(__unix__) || defined(__unix) // code snippet from SFML
+    KeyCode keycode = XKeysymToKeycode(dpy, key_code);
+    if (keycode != 0) {
+        char keys[32];
+        XQueryKeymap(dpy, keys);
+        return (keys[keycode / 8] & (1 << (keycode % 8))) != 0;
+    }
+    else {
+        return false;
+    }
+#else
+    return (GetAsyncKeyState(key_code) & 0x8000) != 0;
+#endif
+}
+
 bool is_pressed(int key_code) {
     if (key_code == 16) {
         return sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)
@@ -143,7 +160,12 @@ bool is_pressed(int key_code) {
         return sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
             || sf::Keyboard::isKeyPressed(sf::Keyboard::RControl);
     } else {
-        return sf::Keyboard::isKeyPressed(ascii_to_key(key_code));
+        sf::Keyboard::Key selected = ascii_to_key(key_code);
+        if (selected != sf::Keyboard::Key::Unknown) {
+            return sf::Keyboard::isKeyPressed(selected);
+        } else {
+            return is_pressed_fallback(key_code);
+        }
     }
 }
 
@@ -342,6 +364,7 @@ std::pair<double, double> get_xy() {
 void cleanup() {
 #if defined(__unix__) || defined(__unix)
     delete xdo;
+    XCloseDisplay(dpy);
 #endif
 }
 };
