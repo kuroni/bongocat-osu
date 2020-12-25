@@ -1,9 +1,6 @@
 #include "header.hpp"
 
-#if defined(__unix__) || defined(__unix)
-#include <X11/Xlib.h>
-#include <X11/extensions/Xrandr.h>
-#else
+#if !defined(__unix__) && !defined(__unix)
 #include <windows.h>
 #endif
 
@@ -16,28 +13,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 #endif
 
     window.create(sf::VideoMode(612, 352), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
-
-    // get refresh rate and set the frame limit
-#if defined(__unix__) || defined(__unix)
-    Display *dpy = XOpenDisplay(NULL);
-    Window root = RootWindow(dpy, 0);
-
-    XRRScreenConfiguration *conf = XRRGetScreenInfo(dpy, root);
-    short refresh_rate = XRRConfigCurrentRate(conf);
-
-    XCloseDisplay(dpy);
-    window.setFramerateLimit(refresh_rate);
-#else
-    DISPLAY_DEVICE device;
-    ZeroMemory(&device, sizeof(device));
-    device.cb = sizeof(device);
-    EnumDisplayDevices(NULL, (DWORD)0, &device, 0);
-    DEVMODE devmode;
-    ZeroMemory(&devmode, sizeof(DEVMODE));
-    devmode.dmSize = sizeof(DEVMODE);
-    EnumDisplaySettings((LPSTR)device.DeviceName, ENUM_REGISTRY_SETTINGS, &devmode);
-    window.setFramerateLimit(devmode.dmDisplayFrequency);
-#endif
+    window.setFramerateLimit(60);
 
     // loading configs
     while (!data::init()) {
