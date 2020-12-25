@@ -94,14 +94,17 @@ void draw() {
     window.draw(bg);
 
     // initializing pss and pss2 (kuvster's magic)
+    Json::Value paw_draw_info = data::cfg["mousePaw"];
+    int x_paw_start = paw_draw_info["pawStartingPoint"][0].asInt();
+    int y_paw_start = paw_draw_info["pawStartingPoint"][1].asInt();
     auto [x, y] = input::get_xy();
     int oof = 6;
-    std::vector<double> pss = {211.0, 159.0};
-    double dist = hypot(211 - x, 159 - y);
-    double centreleft0 = 211 - 0.7237 * dist / 2;
-    double centreleft1 = 159 + 0.69 * dist / 2;
+    std::vector<double> pss = {(float) x_paw_start, (float) y_paw_start};
+    double dist = hypot(x_paw_start - x, y_paw_start - y);
+    double centreleft0 = x_paw_start - 0.7237 * dist / 2;
+    double centreleft1 = y_paw_start + 0.69 * dist / 2;
     for (int i = 1; i < oof; i++) {
-        std::vector<double> bez = {211, 159, centreleft0, centreleft1, x, y};
+        std::vector<double> bez = {(float) x_paw_start, (float) y_paw_start, centreleft0, centreleft1, x, y};
         auto [p0, p1] = input::bezier(1.0 * i / oof, bez, 6);
         pss.push_back(p0);
         pss.push_back(p1);
@@ -113,11 +116,11 @@ void draw() {
     double le = hypot(a, b);
     a = x + a / le * 60;
     b = y + b / le * 60;
-    int a1 = 258;
-    int a2 = 228;
-    dist = hypot(a1 - a, a2 - b);
-    double centreright0 = a1 - 0.6 * dist / 2;
-    double centreright1 = a2 + 0.8 * dist / 2;
+    int x_paw_end = paw_draw_info["pawEndingPoint"][0].asInt();
+    int y_paw_end = paw_draw_info["pawEndingPoint"][1].asInt();
+    dist = hypot(x_paw_end - a, y_paw_end - b);
+    double centreright0 = x_paw_end - 0.6 * dist / 2;
+    double centreright1 = y_paw_end + 0.8 * dist / 2;
     int push = 20;
     double s = x - centreleft0;
     double t = y - centreleft1;
@@ -138,13 +141,13 @@ void draw() {
     pss.push_back(a);
     pss.push_back(b);
     for (int i = oof - 1; i > 0; i--) {
-        std::vector<double> bez = {1.0 * a1, 1.0 * a2, centreright0, centreright1, a, b};
+        std::vector<double> bez = {1.0 * x_paw_end, 1.0 * y_paw_end, centreright0, centreright1, a, b};
         auto [p0, p1] = input::bezier(1.0 * i / oof, bez, 6);
         pss.push_back(p0);
         pss.push_back(p1);
     }
-    pss.push_back(a1);
-    pss.push_back(a2);
+    pss.push_back(x_paw_end);
+    pss.push_back(y_paw_end);
     double mpos0 = (a + x) / 2 - 52 - 15;
     double mpos1 = (b + y) / 2 - 34 + 5;
     double dx = -38;

@@ -61,7 +61,9 @@ void create_config() {
         "key7K": [83, 68, 70, 32, 74, 75, 76]
     },
     "custom": {
+        "background": "img/osu/mousebg.png",
         "mouse": false,
+        "mouseImage": "img/osu/mouse.png",
         "mouseOnTop": true,
         "offsetX": 0,
         "offsetY": 0,
@@ -69,6 +71,11 @@ void create_config() {
         "paw": [255, 255, 255],
         "pawEdge": [0, 0, 0],
         "keyContainers": []
+    },
+    "mousePaw": {
+        "mousePawComment": "coordinates start in the top left of the window",
+        "pawStartingPoint": [211, 159],
+        "pawEndingPoint": [258, 228]
     }
 })V0G0N";
     std::string error;
