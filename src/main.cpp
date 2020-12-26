@@ -12,8 +12,8 @@ int main(int argc, char ** argv) {
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 #endif
 
-    window.create(sf::VideoMode(612, 352), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
-    window.setFramerateLimit(60);
+    window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
+    window.setFramerateLimit(MAX_FRAMERATE);
 
     // loading configs
     while (!data::init()) {
@@ -21,9 +21,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     }
 
     // initialize input
-    input::init();
+    if (!input::init()) {
+        return EXIT_FAILURE;
+    }
 
     bool is_reload = false;
+    bool is_show_input_debug = false;
 
     while (window.isOpen()) {
         sf::Event event;
@@ -33,8 +36,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
                 window.close();
                 break;
 
-            // get reload config prompt
             case sf::Event::KeyPressed:
+                // get reload config prompt
                 if (event.key.code == sf::Keyboard::R && event.key.control) {
                     if (!is_reload) {
                         while (!data::init()) {
@@ -42,6 +45,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
                         }
                     }
                     is_reload = true;
+                    break;
+                }
+
+                // toggle joystick debug panel
+                if (event.key.code == sf::Keyboard::D && event.key.control) {
+                    is_show_input_debug = !is_show_input_debug;
                     break;
                 }
 
@@ -76,9 +85,14 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             custom::draw();
         }
 
+        if (is_show_input_debug) {
+            input::drawDebugPanel();
+        }
+
         window.display();
     }
 
     input::cleanup();
     return 0;
 }
+

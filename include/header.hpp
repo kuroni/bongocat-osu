@@ -1,5 +1,8 @@
 #pragma once
 #define BONGO_KEYPRESS_THRESHOLD 0
+#define WINDOW_WIDTH 612
+#define WINDOW_HEIGHT 352
+#define MAX_FRAMERATE 60
 
 #include <iostream>
 #include <fstream>
@@ -29,13 +32,18 @@ sf::Texture &load_texture(std::string path);
 }; // namespace data
 
 namespace input {
-void init();
+bool init();
 
 bool is_pressed(int key_code);
+
+bool is_joystick_connected();
+bool is_joystick_pressed(int key_code);
 
 std::pair<double, double> bezier(double ratio, std::vector<double> &points, int length);
 
 std::pair<double, double> get_xy();
+
+void drawDebugPanel();
 
 void cleanup();
 }; // namespace input
