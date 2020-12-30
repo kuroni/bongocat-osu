@@ -24,12 +24,12 @@ $(ICODIR)/ico.res: $(ICODIR)/ico.rc
 	windres -O coff -o $@ $^
 
 create:
-	mkdir -p $(OBJDIR)
-	mkdir -p bin
+	mkdir $(OBJDIR) && exit 0
+	mkdir bin && exit 0
 
 test:
 	bin/bongo.exe
 
 clean:
-	rm $(OBJ) || true
-	rm ico/ico.res || true
+	del $(OBJ) && exit 0
+	del ico/ico.res && exit 0
