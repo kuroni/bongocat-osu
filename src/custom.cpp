@@ -3,6 +3,7 @@
 namespace custom {
 struct key {
     Json::Value key_value;
+    Json::Value joy_value;
     sf::Sprite sprite;
     bool status;
     double timer;
@@ -22,6 +23,13 @@ struct key {
             data::error_msg("Custom image path is not set correctly", "Error reading configs");
             throw;
         }
+        if (_key_value.isMember("joyCodes")) {
+            if (!_key_value["joyCodes"].isArray()) {
+                data::error_msg("Custom joyCodes values is not set correctly", "Error reading configs");
+                throw;
+            }
+            joy_value = _key_value["joyCodes"];
+        }
         status = false;
         timer = -1;
     }
@@ -32,6 +40,15 @@ struct key {
                 return true;
             }
         }
+
+        if (input::is_joystick_connected()) {
+            for (Json::Value &v : joy_value) {
+                if (input::is_joystick_pressed(v.asInt())) {
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 
@@ -316,4 +333,4 @@ void draw() {
         window.draw(mouse);
     }
 }
-}; // namespace taiko
+}; // namespace custom
