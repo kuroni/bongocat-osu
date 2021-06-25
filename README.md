@@ -43,7 +43,7 @@ The provided custom config maps Control, Shift, Alt, and Space to the left hand,
 
 For help remapping buttons and finding keycodes: use [this website](https://keycode.info/), the config file uses the same keycodes as JavaScript.
 
-## Original Bongo Cat Overlay Description
+## Original Bongo Cat Overlay Description:
 An osu! Bongo Cat overlay with smooth paw movement and simple skinning ability, written in C++.
 
 You can find how to configure the application in our [wiki](https://github.com/kuroni/bongocat-osu/wiki/Settings).
