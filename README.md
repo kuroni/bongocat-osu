@@ -1,4 +1,4 @@
-# SwapBongo
+# Bongo Swap
 This is a fork of the original Bongo Cat overlay that adds a feature for custom config allowing you to switch between drawing the mouse or drawing an additional hand when the mouse is left stationary for a customizable amount of time.
 This would be useful for people who switch between games that use mouse & keyboard and games that use keyboard only, or just typing. Basically, if you just want a tiny cat that more accurately mimics anything at all you do with your mouse and keyboard for your entire stream, instead of just some inputs chosen for a single game, this will allow you to do that without needing to switch between different configs.
 
