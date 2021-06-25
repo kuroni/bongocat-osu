@@ -4,6 +4,8 @@ This would be useful for people who switch between games that use mouse & keyboa
 
 The provided config file has an example custom config in it that maps the main area of a keyboard and swaps between drawing the right hand or drawing the mouse. If the mouse is actively moving, then only keys on the left side of the keyboard will trigger animations. Once the mouse is left still for a couple seconds, the right hand idle animation will replace the mouse animation, and keys on the right side of the keyboard will trigger animations until the mouse is moved again.
 
+Changed files: main.cpp, custom.cpp, header.hpp, added img/custom, added config.json example
+
 ### Added custom config options:
 * mousePause: Positive integer defined before keyContainers in the custom field. Defines the number of draw iterations for which the mouse must stay stationary in order to stop drawing its arm. If not provided, the mouse is always drawn. I found 100 to be a reasonable order of magnitude for me, giving a pause of about 3 seconds, but fine tune according to your needs.
 * withMouse: Boolean, defined within each key container (**not** the keys structure though). "true" means that the keys will be animated while the mouse is moving. "false" means that keys will not be animated as long as the mouse is moving, but will be animated once it pauses long enough.
