@@ -28,6 +28,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     bool is_reload = false;
     bool is_show_input_debug = false;
 
+	//initialize tracking variables
+	int not_moved = 0;
+	double last_x = -1;
+	double last_y = -1;
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -82,7 +87,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
             mania::draw();
             break;
         case 5:
-            custom::draw();
+            custom::draw(not_moved, last_x, last_y);
         }
 
         if (is_show_input_debug) {
