@@ -4,32 +4,32 @@ This would be useful for people who switch between games that use mouse & keyboa
 
 The provided config file has an example custom config in it that maps the main area of a keyboard and swaps between drawing the right hand or drawing the mouse. If the mouse is actively moving, then only keys on the left side of the keyboard will trigger animations. Once the mouse is left still for a couple seconds, the right hand idle animation will replace the mouse animation, and keys on the right side of the keyboard will trigger animations until the mouse is moved again.
 
-### Additional custom config options:
-*mousePause: Positive integer defined before keyContainers in the custom field. Defines the number of draw iterations for which the mouse must stay stationary in order to stop drawing its arm. If not provided, the mouse is always drawn. I found 100 to be a reasonable order of magnitude for me, giving a pause of about 3 seconds, but fine tune according to your needs.
-*withMouse: Boolean, defined within each key container (**not** the keys structure though). "true" means that the keys will be animated while the mouse is moving. "false" means that keys will not be animated as long as the mouse is moving, but will be animated once it pauses long enough.
+### Added custom config options:
+* mousePause: Positive integer defined before keyContainers in the custom field. Defines the number of draw iterations for which the mouse must stay stationary in order to stop drawing its arm. If not provided, the mouse is always drawn. I found 100 to be a reasonable order of magnitude for me, giving a pause of about 3 seconds, but fine tune according to your needs.
+* withMouse: Boolean, defined within each key container (**not** the keys structure though). "true" means that the keys will be animated while the mouse is moving. "false" means that keys will not be animated as long as the mouse is moving, but will be animated once it pauses long enough.
 
 ## Full list of custom config options:
 Unless I missed something, the original Bongo Cat page didn't have a full list of every option available for custom configurations, so here it is:
 
 custom options (defined before "keyContainers"):
-*mouse: Boolean, defines whether the mouse is ever drawn in this configuration or not.
-*mouseOnTop: Boolean, defines whether to draw the mouse on top of or underneath the paw.
-*offsetX: Int, how many pixels to shift the mouse image right with respect to its normal point at the end of the paw.
-*offsetY: Int, how many pixels to shift the mouse image down with respect to its normal point at the end of the paw.
-*paw: Int array [r, g, b], paw fill color as an rbg triple.
-*pawEdge: Int array [r, g, b], paw edge color as an rbg triple.
-*mouseImage: String, path to custom mouse image.
-*keyContainers: Array of `key_container` structures. Each `key_container` defines a default idle image and withMouse setting to be used for a set of `keys` structures.
+* mouse: Boolean, defines whether the mouse is ever drawn in this configuration or not.
+* mouseOnTop: Boolean, defines whether to draw the mouse on top of or underneath the paw.
+* offsetX: Int, how many pixels to shift the mouse image right with respect to its normal point at the end of the paw.
+* offsetY: Int, how many pixels to shift the mouse image down with respect to its normal point at the end of the paw.
+* paw: Int array [r, g, b], paw fill color as an rbg triple.
+* pawEdge: Int array [r, g, b], paw edge color as an rbg triple.
+* mouseImage: String, path to custom mouse image.
+* keyContainers: Array of `key_container` structures. Each `key_container` defines a default idle image and withMouse setting to be used for a set of `keys` structures.
 
 key container options (defined inside each key container, before "keys"):
-*defaultImage: String, path to custom image to show when none of the contained keys are being pressed.
-*mousePause: Positive integer, defines the number of draw iterations for which the mouse must stay stationary in order to stop drawing its arm.
-*keys: Array of `key` structures. Each `key` structure defines an image to be shown whenever any one of a set of keys is pressed. So, a `key_container` allows one idle image to be used for many keys that use different pressed animations.
+* defaultImage: String, path to custom image to show when none of the contained keys are being pressed.
+* mousePause: Positive integer, defines the number of draw iterations for which the mouse must stay stationary in order to stop drawing its arm.
+* keys: Array of `key` structures. Each `key` structure defines an image to be shown whenever any one of a set of keys is pressed. So, a `key_container` allows one idle image to be used for many keys that use different pressed animations.
 
 key options (defined inside each key object):
-*image: String, path to custom image to be shown when any one of the keys in the keyCodes array is pressed.
-*keyCodes: Int array, list of [key codes](https://keycode.info/) that will cause `image` to be shown when they are pressed.
-*joyCodes: Int array, list of joystick or controller button codes that will cause `image` to be shown when they are pressed.
+* image: String, path to custom image to be shown when any one of the keys in the keyCodes array is pressed.
+* keyCodes: Int array, list of [key codes](https://keycode.info/) that will cause `image` to be shown when they are pressed.
+* joyCodes: Int array, list of joystick or controller button codes that will cause `image` to be shown when they are pressed.
 
 
 ## Troubleshooting
