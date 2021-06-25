@@ -91,7 +91,7 @@ struct key_container {
                 throw;
 			}
 			else {
-				if (key_container_value["withMouse"].isMember()) {
+				if (key_container_value.isMember("withMouse")) {
 					with_mouse = key_container_value["withMouse"].asBool();
 				}
 				else {
