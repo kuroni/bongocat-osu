@@ -75,5 +75,5 @@ void draw();
 namespace custom {
 bool init();
 
-void draw();
+void draw(int &not_moved, double &last_x, double &last_y);
 }; // namespace custom
