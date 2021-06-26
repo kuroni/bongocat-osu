@@ -1,0 +1,77 @@
+ {
+    "mode": 5,
+    "resolution": {
+        "letterboxing": false,
+        "width": 2560,
+        "height": 1440,
+        "horizontalPosition": 0,
+        "verticalPosition": 0
+    },
+    "decoration": {
+        "leftHanded": false,
+        "rgb": [255, 255, 255],
+        "offsetX": [0, 11],
+        "offsetY": [0, -65],
+        "scalar": [1.0, 1.0]
+    },
+    "osu": {
+        "mouse": true,
+        "paw": [255, 255, 255],
+        "pawEdge": [0, 0, 0],
+        "key1": [90],
+        "key2": [88],
+        "smoke": [67],
+        "wave": [86]
+    },
+    "taiko": {
+        "leftCentre": [88],
+        "rightCentre": [67],
+        "leftRim": [90],
+        "rightRim": [86]
+    },
+    "catch": {
+        "left": [37],
+        "right": [39],
+        "dash": [16]
+    },
+    "mania": {
+        "4K": true,
+        "key4K": [68, 70, 74, 75],
+        "key7K": [83, 68, 70, 32, 74, 75, 76]
+    },
+  "custom": {
+    "mouse": true,
+    "mousePause": 100,
+    "background": "img/custom/bg.png",
+    "keyContainers": [
+      {
+        "defaultImage": "img/custom/rightup.png",
+        "withMouse": false,
+        "keys": [
+          {
+            "image": "img/custom/rightin.png",
+            "keyCodes": [ 72, 74, 75, 76, 59, 222, 13, 78, 77, 188, 190, 191, 37, 40 ]
+          },
+          {
+            "image": "img/custom/rightout.png",
+            "keyCodes": [ 55, 56, 57, 48, 173, 61, 8, 89, 85, 73, 79, 80, 219,  221, 220, 46, 38, 39 ]
+          }
+        ]
+      },
+      {
+        "defaultImage": "img/custom/leftup.png",
+        "withMouse":  true,
+        "keys": [
+          {
+            "image": "img/custom/leftin.png",
+            "keyCodes": [ 52, 53, 54, 69, 82, 84, 68, 70, 71, 67, 86, 66, 88, 32 ]
+          },
+          {
+            "image": "img/custom/leftout.png",
+            "keyCodes": [ 49, 50, 51, 81, 87, 20, 65, 83, 90, 17, 27, 192, 9, 16, 18 ]
+          }
+        ]
+      }
+    ]
+  }
+}
