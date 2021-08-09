@@ -19,7 +19,7 @@ std::map<std::string, sf::Texture> img_holder;
 void create_config() {
     const char *s =
         R"V0G0N({
-    "mode": 1,
+    "mode": 5,
     "resolution": {
         "letterboxing": false,
         "width": 1920,
@@ -70,7 +70,10 @@ void create_config() {
         "scalar": 1.0,
         "paw": [255, 255, 255],
         "pawEdge": [0, 0, 0],
-        "keyContainers": []
+        "keyContainers": [],
+        "smoke": [67],
+        "smokeImage": "img/osu/smoke.png",
+        "toggleSmoke": false
     },
     "mousePaw": {
         "mousePawComment": "coordinates start in the top left of the window",
