@@ -19,7 +19,7 @@ std::map<std::string, sf::Texture> img_holder;
 void create_config() {
     const char *s =
         R"V0G0N({
-    "mode": 5,
+    "mode": 1,
     "resolution": {
         "letterboxing": false,
         "width": 1920,
