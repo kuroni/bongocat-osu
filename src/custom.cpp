@@ -4,9 +4,11 @@ namespace custom {
 struct key {
     Json::Value key_value;
     Json::Value joy_value;
+    bool toggle_enabled;
     sf::Sprite sprite;
     bool status;
     double timer;
+    bool toggle;
 
     key(Json::Value _key_value) {
         sprite = sf::Sprite();
@@ -30,8 +32,18 @@ struct key {
             }
             joy_value = _key_value["joyCodes"];
         }
+        if (_key_value.isMember("toggle")) {
+            if (!_key_value["toggle"].isBool()) {
+                data::error_msg("Toggle property is not set correctly", "Error reading configs");
+                throw;
+            }
+            toggle_enabled = _key_value["toggle"].asBool();
+        } else {
+            toggle_enabled = false;
+        }
         status = false;
         timer = -1;
+        toggle = false;
     }
 
     bool is_pressed() {
@@ -62,8 +74,12 @@ struct key_container {
     std::vector<key> keys;
     sf::Sprite default_sprite;
     int key_state;
+    bool previous_key_state;
+    bool current_key_state;
 
     key_container(Json::Value key_container_value) {
+        previous_key_state = false;
+        current_key_state = false;
         key_state = -1;
         if (key_container_value.isObject()) {
             if (!key_container_value.isMember("defaultImage")
@@ -86,20 +102,61 @@ struct key_container {
     }
 
     void draw() {
+        bool is_any_image_activated = false;
         bool is_any_key_pressed = false;
         for (int i = 0; i < keys.size(); i++) {
             key& current_key = keys[i];
-            if (current_key.is_pressed()) {
-                is_any_key_pressed = true;
-                if (!current_key.status) {
-                    key_state = i;
-                    current_key.status = true;
+            if (current_key.toggle_enabled) {
+                if (current_key.is_pressed()) {
+                    previous_key_state = current_key_state;
+                    current_key_state = true;
+
+                    bool is_key_down = current_key_state != previous_key_state;
+
+                    if (is_key_down) {
+                        current_key.toggle = !current_key.toggle;
+                        current_key.status = current_key.toggle;
+                        is_any_image_activated = current_key.toggle;
+
+                        if (current_key.toggle) {
+                            if (key_state > -1 && keys[key_state].toggle_enabled && keys[key_state].toggle) {
+                                // there is another toggled image, untoggle it
+                                // key_state points to the last image at this point
+                                keys[key_state].toggle = false;
+                            }
+                            key_state = i;
+                        }
+                    }
+                } else {
+                    current_key_state = false;
                 }
             } else {
-                current_key.status = false;
+                if (current_key.is_pressed()) {
+                    is_any_image_activated = true;
+                    
+                    if (!current_key.status) {
+                        if (key_state > -1 && keys[key_state].toggle_enabled && keys[key_state].toggle) {
+                            // there is another toggled image, untoggle it
+                            // key_state points to the last image at this point
+                            keys[key_state].toggle = false;
+                        }
+                        key_state = i;
+                        current_key.status = true;
+                    }
+                } else {
+                    current_key.status = false;
+                }
             }
         }
-        if (!is_any_key_pressed) {
+        if (!is_any_image_activated && !is_any_key_pressed) {
+            if (key_state > -1) {
+                key& on_key = keys[key_state];
+                if (on_key.toggle_enabled && on_key.toggle) {
+                    is_any_image_activated = true;
+                }
+            }
+        }
+        if (!is_any_image_activated) {
             key_state = -1;
             window.draw(default_sprite);
         }
@@ -124,13 +181,10 @@ std::vector<key_container> key_containers;
 sf::Sprite bg, mouse, smoke;
 Json::Value smoke_key_value;
 
-bool is_mouse, is_mouse_on_top, is_enable_toggle_smoke;
+bool is_mouse, is_mouse_on_top;
 int offset_x, offset_y, scale;
 int paw_r, paw_g, paw_b, paw_a;
 int paw_edge_r, paw_edge_g, paw_edge_b, paw_edge_a;
-bool previous_smoke_key_state = false;
-bool current_smoke_key_state = false;
-bool is_toggle_smoke = false;
 
 bool init() {
     // getting configs
@@ -170,10 +224,6 @@ bool init() {
             }
             mouse.setTexture(data::load_texture(custom["mouseImage"].asString()));
         }
-
-        smoke_key_value = custom["smoke"];
-        is_enable_toggle_smoke = custom["toggleSmoke"].asBool();
-        smoke.setTexture(data::load_texture(custom["smokeImage"].asString()));
     } catch (...) {
         return false;
     }
@@ -339,34 +389,6 @@ void draw() {
     // drawing mouse at the bottom
     if (is_mouse && !is_mouse_on_top) {
         window.draw(mouse);
-    }
-
-    // draw smoke
-    bool is_smoke_key_pressed = false;
-
-    for (Json::Value &v : smoke_key_value) {
-        if (input::is_pressed(v.asInt())) {
-            is_smoke_key_pressed = true;
-            break;
-        }
-    }
-
-    if (is_enable_toggle_smoke) {
-        previous_smoke_key_state = current_smoke_key_state;
-        current_smoke_key_state = is_smoke_key_pressed;
-
-        bool is_smoke_key_down = current_smoke_key_state && (current_smoke_key_state != previous_smoke_key_state);
-
-        if (is_smoke_key_down) {
-            is_toggle_smoke = !is_toggle_smoke;
-        }
-    }
-    else {
-        is_toggle_smoke = is_smoke_key_pressed;
-    }
-
-    if (is_toggle_smoke) {
-        window.draw(smoke);
     }
 }
 }; // namespace custom

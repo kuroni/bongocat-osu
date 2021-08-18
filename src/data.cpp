@@ -70,10 +70,7 @@ void create_config() {
         "scalar": 1.0,
         "paw": [255, 255, 255],
         "pawEdge": [0, 0, 0],
-        "keyContainers": [],
-        "smoke": [67],
-        "smokeImage": "img/osu/smoke.png",
-        "toggleSmoke": false
+        "keyContainers": []
     },
     "mousePaw": {
         "mousePawComment": "coordinates start in the top left of the window",
