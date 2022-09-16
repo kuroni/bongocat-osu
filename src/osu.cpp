@@ -90,7 +90,7 @@ bool init() {
     return true;
 }
 
-void draw() {
+void draw(const sf::RenderStates& rstates) {
     window.draw(bg);
 
     // initializing pss and pss2 (kuvster's magic)
@@ -98,6 +98,7 @@ void draw() {
     int x_paw_start = paw_draw_info["pawStartingPoint"][0].asInt();
     int y_paw_start = paw_draw_info["pawStartingPoint"][1].asInt();
     auto [x, y] = input::get_xy();
+    y += data::cfg["decoration"]["window_height"].asInt() - BASE_HEIGHT;
     int oof = 6;
     std::vector<double> pss = {(float) x_paw_start, (float) y_paw_start};
     double dist = hypot(x_paw_start - x, y_paw_start - y);
@@ -297,37 +298,37 @@ void draw() {
 
     if (!left_key_state && !right_key_state && !wave_key_state) {
         key_state = 0;
-        window.draw(up);
+        window.draw(up, rstates);
     }
 
     if (key_state == 1) {
         if ((clock() - std::max(timer_right_key, timer_wave_key)) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
             if (!is_left_handed) {
-                window.draw(left);
+                window.draw(left, rstates);
             } else {
-                window.draw(right);
+                window.draw(right, rstates);
             }
             timer_left_key = clock();
         } else {
-            window.draw(up);
+            window.draw(up, rstates);
         }
     } else if (key_state == 2) {
         if ((clock() - std::max(timer_left_key, timer_wave_key)) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
             if (!is_left_handed) {
-                window.draw(right);
+                window.draw(right, rstates);
             } else {
-                window.draw(left);
+                window.draw(left, rstates);
             }
             timer_right_key = clock();
         } else {
-            window.draw(up);
+            window.draw(up, rstates);
         }
     } else if (key_state == 3) {
         if ((clock() - std::max(timer_left_key, timer_right_key)) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
-            window.draw(wave);
+            window.draw(wave, rstates);
             timer_wave_key = clock();
         } else {
-            window.draw(up);
+            window.draw(up, rstates);
         }
     }
 
@@ -361,7 +362,7 @@ void draw() {
     }
 
     if (is_toggle_smoke) {
-        window.draw(smoke);
+        window.draw(smoke, rstates);
     }
 }
 }; // namespace osu

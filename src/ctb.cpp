@@ -40,7 +40,7 @@ bool init() {
     return true;
 }
 
-void draw() {
+void draw(const sf::RenderStates& rstates) {
     window.draw(bg);
     
     // drawing left-right keypresses
@@ -78,34 +78,34 @@ void draw() {
 
     if (!left_key_state && !right_key_state) {
         key_state = 0;
-        window.draw(mid);
+        window.draw(mid, rstates);
     }
     if (key_state == 1) {
         if ((clock() - timer_right_key) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
-            window.draw(left);
+            window.draw(left, rstates);
             timer_left_key = clock();
         } else {
-            window.draw(mid);
+            window.draw(mid, rstates);
         }
     } else if (key_state == 2) {
         if ((clock() - timer_left_key) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
-            window.draw(right);
+            window.draw(right, rstates);
             timer_right_key = clock();
         } else {
-            window.draw(mid);
+            window.draw(mid, rstates);
         }
     }
 
     bool is_dash = false;
     for (Json::Value &v : dash_key_value) {
         if (input::is_pressed(v.asInt())) {
-            window.draw(dash);
+            window.draw(dash, rstates);
             is_dash = true;
             break;
         }
     }
     if (!is_dash) {
-        window.draw(up);
+        window.draw(up, rstates);
     }
 }
 }; // namespace ctb

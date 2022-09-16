@@ -52,8 +52,8 @@ struct key {
         return false;
     }
 
-    void draw() {
-        window.draw(sprite);
+    void draw(const sf::RenderStates& rstates) {
+        window.draw(sprite, rstates);
         timer = clock();
     }
 };
@@ -85,7 +85,7 @@ struct key_container {
         }
     }
 
-    void draw() {
+    void draw(const sf::RenderStates& rstates) {
         bool is_any_key_pressed = false;
         for (int i = 0; i < keys.size(); i++) {
             key& current_key = keys[i];
@@ -101,7 +101,7 @@ struct key_container {
         }
         if (!is_any_key_pressed) {
             key_state = -1;
-            window.draw(default_sprite);
+            window.draw(default_sprite, rstates);
         }
         if (key_state > -1) {
             key& on_key = keys[key_state];
@@ -112,9 +112,9 @@ struct key_container {
                 }
             }
             if ((clock() - last_press) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
-                on_key.draw();
+                on_key.draw(rstates);
             } else {
-                window.draw(default_sprite);
+                window.draw(default_sprite, rstates);
             }
         }
     }
@@ -172,7 +172,7 @@ bool init() {
     return true;
 }
 
-void draw() {
+void draw(const sf::RenderStates& rstates) {
     window.draw(bg);
 
     if (is_mouse) {
@@ -181,6 +181,8 @@ void draw() {
         int x_paw_start = paw_draw_info["pawStartingPoint"][0].asInt();
         int y_paw_start = paw_draw_info["pawStartingPoint"][1].asInt();
         auto [x, y] = input::get_xy();
+        // Add extra custom height from the base height this bezier calculation is based on
+        y += data::cfg["decoration"]["window_height"].asInt() - BASE_HEIGHT;
         int oof = 6;
         std::vector<double> pss = {(float) x_paw_start, (float) y_paw_start};
         double dist = hypot(x_paw_start - x, y_paw_start - y);
@@ -325,7 +327,7 @@ void draw() {
     }
 
     for (key_container& current : key_containers) {
-        current.draw();
+        current.draw(rstates);
     }
 
     // drawing mouse at the bottom
