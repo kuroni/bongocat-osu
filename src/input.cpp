@@ -166,7 +166,7 @@ bool init() {
     }
 
     // initialize debug resource
-    debugBackground.setSize(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
+    debugBackground.setSize(sf::Vector2f(data::cfg["decoration"]["window_width"].asInt(), data::cfg["decoration"]["window_height"].asInt()));
     debugBackground.setFillColor(sf::Color(0, 0, 0, 128));
 
     debugText.setFont(debugFont);

@@ -53,7 +53,7 @@ bool init() {
     return true;
 }
 
-void draw() {
+void draw(const sf::RenderStates& rstates) {
     window.draw(bg);
 
     // 0 for left side, 1 for right side
@@ -92,21 +92,21 @@ void draw() {
 
         if (!rim_key_state[i] && !centre_key_state[i]) {
             key_state[i] = 0;
-            window.draw(up[i]);
+            window.draw(up[i], rstates);
         }
         if (key_state[i] == 1) {
             if ((clock() - timer_centre_key[i]) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
-                window.draw(rim[i]);
+                window.draw(rim[i], rstates);
                 timer_rim_key[i] = clock();
             } else {
-                window.draw(up[i]);
+                window.draw(up[i], rstates);
             }
         } else if (key_state[i] == 2) {
             if ((clock() - timer_rim_key[i]) / CLOCKS_PER_SEC > BONGO_KEYPRESS_THRESHOLD) {
-                window.draw(centre[i]);
+                window.draw(centre[i], rstates);
                 timer_centre_key[i] = clock();
             } else {
-                window.draw(up[i]);
+                window.draw(up[i], rstates);
             }
         }
     }

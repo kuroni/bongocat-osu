@@ -28,6 +28,8 @@ void create_config() {
         "verticalPosition": 0
     },
     "decoration": {
+        "window_width": 612,
+        "window_height": 352,
         "leftHanded": false,
         "rgb": [255, 255, 255],
         "offsetX": [0, 11],

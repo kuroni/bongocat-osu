@@ -56,7 +56,7 @@ bool init() {
     return true;
 }
 
-void draw_4K() {
+void draw_4K(const sf::RenderStates& rstates) {
     window.draw(bg);
 
     int left_cnt = 0, right_cnt = 0;
@@ -64,12 +64,12 @@ void draw_4K() {
 
     for (int i = 0; i < 2; i++) {
         if (input::is_pressed(left_key_value_4K[i])) {
-            window.draw(left_4K[i]);
+            window.draw(left_4K[i], rstates);
             left_cnt++;
             left_sum += i;
         }
         if (input::is_pressed(right_key_value_4K[i])) {
-            window.draw(right_4K[i]);
+            window.draw(right_4K[i], rstates);
             right_cnt++;
             right_sum += i;
         }
@@ -77,34 +77,34 @@ void draw_4K() {
 
     // draw left hand
     if (left_cnt == 0) {
-        window.draw(left_handup);
+        window.draw(left_handup, rstates);
     } else {
         double avg = 1.0 * left_sum / left_cnt;
         if (avg == 0) {
-            window.draw(left_hand[0]);
+            window.draw(left_hand[0], rstates);
         } else if (avg == 0.5) {
-            window.draw(left_hand[1]);
+            window.draw(left_hand[1], rstates);
         } else {
-            window.draw(left_hand[2]);
+            window.draw(left_hand[2], rstates);
         }
     }
 
     // draw right hand
     if (right_cnt == 0) {
-        window.draw(right_handup);
+        window.draw(right_handup, rstates);
     } else {
         double avg = 1.0 * right_sum / right_cnt;
         if (avg == 0) {
-            window.draw(right_hand[0]);
+            window.draw(right_hand[0], rstates);
         } else if (avg == 0.5) {
-            window.draw(right_hand[1]);
+            window.draw(right_hand[1], rstates);
         } else {
-            window.draw(right_hand[2]);
+            window.draw(right_hand[2], rstates);
         }
     }
 }
 
-void draw_7K() {
+void draw_7K(const sf::RenderStates& rstates) {
     window.draw(bg);
 
     int left_cnt = 0, right_cnt = 0;
@@ -112,12 +112,12 @@ void draw_7K() {
 
     for (int i = 0; i < 4; i++) {
         if (input::is_pressed(left_key_value_7K[i])) {
-            window.draw(left_7K[i]);
+            window.draw(left_7K[i], rstates);
             left_cnt++;
             left_sum += i;
         }
         if (input::is_pressed(right_key_value_7K[i])) {
-            window.draw(right_7K[i]);
+            window.draw(right_7K[i], rstates);
             right_cnt++;
             right_sum += i;
         }
@@ -125,38 +125,38 @@ void draw_7K() {
 
     // draw left hand
     if (left_cnt == 0) {
-        window.draw(left_handup);
+        window.draw(left_handup, rstates);
     } else {
         double avg = 1.0 * left_sum / left_cnt;
         if (avg < 1.0) {
-            window.draw(left_hand[0]);
+            window.draw(left_hand[0], rstates);
         } else if (avg <= 2.0) {
-            window.draw(left_hand[1]);
+            window.draw(left_hand[1], rstates);
         } else {
-            window.draw(left_hand[2]);
+            window.draw(left_hand[2], rstates);
         }
     }
 
     // draw right hand
     if (right_cnt == 0) {
-        window.draw(right_handup);
+        window.draw(right_handup, rstates);
     } else {
         double avg = 1.0 * right_sum / right_cnt;
         if (avg < 1.0) {
-            window.draw(right_hand[0]);
+            window.draw(right_hand[0], rstates);
         } else if (avg <= 2.0) {
-            window.draw(right_hand[1]);
+            window.draw(right_hand[1], rstates);
         } else {
-            window.draw(right_hand[2]);
+            window.draw(right_hand[2], rstates);
         }
     }
 }
 
-void draw() {
+void draw(const sf::RenderStates& rstates) {
     if (is_4K) {
-        draw_4K();
+        draw_4K(rstates);
     } else {
-        draw_7K();
+        draw_7K(rstates);
     }
 }
 }; // namespace mania

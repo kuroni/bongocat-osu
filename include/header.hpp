@@ -1,7 +1,7 @@
 #pragma once
 #define BONGO_KEYPRESS_THRESHOLD 0
-#define WINDOW_WIDTH 612
-#define WINDOW_HEIGHT 352
+#define BASE_WIDTH 612
+#define BASE_HEIGHT 352
 #define MAX_FRAMERATE 60
 
 #include <iostream>
@@ -51,29 +51,29 @@ void cleanup();
 namespace osu {
 bool init();
 
-void draw();
+void draw(const sf::RenderStates& rstates);
 }; // namespace osu
 
 namespace taiko {
 bool init();
 
-void draw();
+void draw(const sf::RenderStates& rstates);
 }; // namespace taiko
 
 namespace ctb {
 bool init();
 
-void draw();
+void draw(const sf::RenderStates& rstates);
 }; // namespace ctb
 
 namespace mania {
 bool init();
 
-void draw();
+void draw(const sf::RenderStates& rstates);
 }; // namespace mania
 
 namespace custom {
 bool init();
 
-void draw();
+void draw(const sf::RenderStates& rstates);
 }; // namespace custom

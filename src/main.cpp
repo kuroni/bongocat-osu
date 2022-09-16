@@ -12,13 +12,16 @@ int main(int argc, char ** argv) {
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 #endif
 
-    window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
-    window.setFramerateLimit(MAX_FRAMERATE);
-
     // loading configs
     while (!data::init()) {
         continue;
     }
+
+    Json::Value windowWidth = data::cfg["decoration"]["window_width"];
+    Json::Value windowHeight = data::cfg["decoration"]["window_height"];
+    window.create(sf::VideoMode(windowWidth.asInt(), windowHeight.asInt()), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
+    window.setFramerateLimit(MAX_FRAMERATE);
+
 
     // initialize input
     if (!input::init()) {
@@ -67,22 +70,27 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
         int blue_value = rgb[2].asInt();
         int alpha_value = rgb.size() == 3 ? 255 : rgb[3].asInt();
 
+        // Translation for artifacts when resize is applied
+        sf::Transform transform = sf::Transform();
+        transform.translate(0, windowHeight.asInt()-BASE_HEIGHT);
+        sf::RenderStates rstates = sf::RenderStates(transform);
+
         window.clear(sf::Color(red_value, green_value, blue_value, alpha_value));
         switch (mode) {
         case 1:
-            osu::draw();
+            osu::draw(rstates);
             break;
         case 2:
-            taiko::draw();
+            taiko::draw(rstates);
             break;
         case 3:
-            ctb::draw();
+            ctb::draw(rstates);
             break;
         case 4:
-            mania::draw();
+            mania::draw(rstates);
             break;
         case 5:
-            custom::draw();
+            custom::draw(rstates);
         }
 
         if (is_show_input_debug) {
