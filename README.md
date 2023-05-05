@@ -1,4 +1,8 @@
 # Description
+
+This project is a fork of the [osu! Bongo Cat overlay](https://github.com/kuroni/bongocat-osu).
+
+## Original description
 An osu! Bongo Cat overlay with smooth paw movement and simple skinning ability, written in C++. Originally created by [HamishDuncanson](https://github.com/HamishDuncanson).
 
 You can find how to configure the application in our [wiki](https://github.com/kuroni/bongocat-osu/wiki/Settings).
@@ -10,6 +14,11 @@ Hugs and kisses to [CSaratakij](https://github.com/CSaratakij) for creating the 
 Any suggestion and/or collaboration, especially that relating to sprites, is welcomed! Thank you!
 
 [Original post](https://www.reddit.com/r/osugame/comments/9hrkte/i_know_bongo_cat_is_getting_old_but_heres_a_nicer/) by [Kuvster](https://github.com/Kuvster).
+
+## License
+
+The project is licensed under the GNU GPL v3 license (see [LICENSE](LICENSE)), however it contains parts from the original project licensed under
+a MIT license. A copy of the full text of the original copyright and license is included in [LICENSE.ORIG.MIT](LICENSE.ORIG.MIT).
 
 ## Further information
 In order to play with fullscreen on Windows 10, run both osu! and this application in Windows 7 compability mode.
