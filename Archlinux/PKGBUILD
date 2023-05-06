@@ -1,7 +1,7 @@
 # A PKGBUILD which creates a dev package from a local repo without downloading the sources.
 # This script is purposed for testing and development on Archlinux/Manjaro distros.
 pkgname=bongocat-gnu-dev
-pkgver=1.5.3
+pkgver=0.0.0 # Filled in pkgver()
 pkgrel=1
 pkgdesc="A fork of the Bongo Cat overlay for GNU/Linux"
 arch=(x86_64)
@@ -14,7 +14,9 @@ changelog=
 
 pkgver() {
     cd ../..
-    printf 1.5.3_"$(git rev-parse --short HEAD)"
+    # Pick the first three version numbers from the latest tag in the repo
+    # and supplement them with a short hash of the latest commit
+    printf "$(git describe --tags --abbrev=0)"_"$(git rev-parse --short HEAD)"
 }
 
 build() {
