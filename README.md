@@ -48,9 +48,11 @@ You need to have these dependencies installed. Check with your package manager f
 - x11
 - xrandr
 
-Then, copy `Makefile.linux` to `Makefile`.
-
 ### Building and testing
+
+#### Linux
+Copy the `Makefile.linux` to `Makefile`.
+
 To build, run this command from the base directory:
 
 ```sh
@@ -64,6 +66,14 @@ make test
 ```
 
 Alternatively, you can copy the newly-compiled `bin/bongo.exe` or `bin/bongo` into the base directory and execute it.
+
+#### Archlinux
+On Arch based distros you can also use this [PKGBUILD](Archlinux/PKGBUILD) to build a package from your local repo by running,
+for instance, the following commands:
+```
+cd Archlinux
+makepkg -fi
+```
 
 If you have troubles compiling, it can be due to version mismatch between your compiler and SFML. See [#43](https://github.com/kuroni/bongocat-osu/issues/43) for more information.
 
