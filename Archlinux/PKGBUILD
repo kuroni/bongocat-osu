@@ -1,0 +1,35 @@
+# A PKGBUILD which creates a dev package from a local repo without downloading the sources.
+# This script is purposed for testing and development on Archlinux/Manjaro distros.
+pkgname=bongocat-gnu-dev
+pkgver=1.5.3
+pkgrel=1
+pkgdesc="A fork of the Bongo Cat overlay for GNU/Linux"
+arch=(x86_64)
+url="https://github.com/linuxdasein/bongocat-gnu"
+license=('GPL3')
+depends=('sdl2' 'sfml' 'xorg-xrandr' 'xdotool')
+makedepends=('gcc' 'git' 'make')
+conflicts=('bongocat-osu-git')
+changelog=
+
+pkgver() {
+    cd ../..
+    printf 1.5.3_"$(git rev-parse --short HEAD)"
+}
+
+build() {
+    cd ../..
+    cp Makefile.linux Makefile
+    make
+}
+
+package() {
+    cd ..
+    mkdir -p $pkgdir/opt/bongocat-gnu
+    cp $srcdir/../../bin/bongo $pkgdir/opt/bongocat-gnu/bongocat
+    cp -r $srcdir/../../img $pkgdir/opt/bongocat-gnu
+    cp -r $srcdir/../../font $pkgdir/opt/bongocat-gnu
+    install -Dm644 $srcdir/../../ico/bongo.ico $pkgdir/usr/share/icons/hicolor/128x128/apps/bongocat.ico
+    install -Dm755 "bongocat" "${pkgdir}/usr/bin/bongocat"
+    install -Dm644 "bongocat-gnu.desktop" "${pkgdir}/usr/share/applications/bongocat-osu.desktop"
+}

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories=Utility;
+Exec=bongocat %u
+Icon=/usr/share/icons/hicolor/128x128/apps/bongocat.ico
+Name=BongoCat
+Comment=A fork of the Bongo Cat overlay for GNU/Linux
+StartupNotify=true
+Terminal=false
+Type=Application
