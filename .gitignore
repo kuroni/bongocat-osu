@@ -1,8 +1,10 @@
+.vscode/
+.xmake/
+
+# build
+build/
+bin/
 *.res
-*.exe
-*.o
-Makefile
-bongo
-bin/*
+
 NOTE
 config.json
