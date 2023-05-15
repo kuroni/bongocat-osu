@@ -35,8 +35,10 @@ end
 target("bongo")
     set_kind("binary")
     add_files("src/*.cpp")
+    add_files("ico/ico.rc")
 
     add_packages("sfml", "jsoncpp")
+
     set_rundir("$(projectdir)")
     
     on_load(function (target)
@@ -51,48 +53,11 @@ target("bongo")
         end
     end)
 
-    before_link(function (target)
-        if not is_plat("windows") then
-            return
-        end
-
-        import("detect.tools.find_rc")
-        import("detect.tools.find_windres")
-        -- mingw
-        local windres = find_windres()
-        if windres then
-            local args = {"-O", "coff", "-o", "ico/ico.res", "ico/ico.rc"}
-            os.runv(windres.program, args)
-            target:add("ldflags", "ico/ico.res")
-            return
-        end
-        -- msvc
-        local envs = {}
-        -- TODO: Not hard code path
-        envs.WindowsSdkDir = "C:/Program Files (x86)/Windows Kits/10"
-        envs.WindowsSDKVersion = "10.0.22000.0"
-        local rc, version = find_rc({envs = envs})
-        if rc then
-            -- see https://learn.microsoft.com/en-us/windows/win32/menurc/using-rc-the-rc-command-line-
-            local args = {"/fo", "ico/ico.res", "ico/ico.rc"}
-            os.runv(rc, args)
-            target:add("ldflags", "ico/ico.res")
-            return
-        end
-
-        print("Cannot found resource converter!")
-    end)
-
-    after_clean(function (target)
-        os.tryrm("ico/ico.res")
-    end)
-
     on_install(function (target)
         local outputdir = "bin"
         os.mkdir(outputdir)
         os.cp("$(projectdir)/font", outputdir)
         os.cp("$(projectdir)/img", outputdir)
-        os.cp("config.json", outputdir)
         os.cp(target:targetfile(), outputdir)
 
         import("utils.archive")
@@ -105,4 +70,3 @@ target("bongo")
         os.tryrm("bin")
         os.tryrm(archive_name)
     end)
-target_end()
