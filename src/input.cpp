@@ -2,8 +2,8 @@
 #include <sstream>
 #include <cmath>
 #include <iomanip>
+#include <algorithm>
 #include <SFML/Window.hpp>
-
 #if defined(__unix__) || defined(__unix)
 #include <X11/Xlib.h>
 #include <X11/extensions/Xrandr.h>
@@ -66,7 +66,8 @@ static int _XlibErrorHandler(Display *display, XErrorEvent *event) {
 
 int INPUT_KEY_TABLE[TOTAl_INPUT_TABLE_SIZE];
 
-bool init() {
+bool init(HINSTANCE hInstance) {
+
     for (int i = 0; i < TOTAl_INPUT_TABLE_SIZE; i++) {
         if (i >= 48 && i <= 57) {           // number
             INPUT_KEY_TABLE[i] = i - 48 + (int)sf::Keyboard::Key::Num0;
@@ -157,6 +158,9 @@ bool init() {
     GetWindowRect(h_desktop, &desktop);
     horizontal = desktop.right;
     vertical = desktop.bottom;
+
+    rawinput::init(hInstance);
+
 #endif
 
     // loading font
@@ -485,25 +489,32 @@ std::pair<double, double> get_xy() {
         letter_x = 0;
         letter_y = 0;
     }
+
     double x, y;
     POINT point;
-    if (GetCursorPos(&point)) {
-        if (!is_letterbox) {
-            letter_x = floor(1.0 * point.x / osu_x) * osu_x;
-            letter_y = floor(1.0 * point.y / osu_y) * osu_y;
-        }
-        double fx = (1.0 * point.x - letter_x) / s_width;
-        if (is_left_handed) {
-            fx = 1 - fx;
-        }
-        double fy = (1.0 * point.y - letter_y) / s_height;
-        fx = std::min(fx, 1.0);
-        fx = std::max(fx, 0.0);
-        fy = std::min(fy, 1.0);
-        fy = std::max(fy, 0.0);
-        x = -97 * fx + 44 * fy + 184;
-        y = -76 * fx - 40 * fy + 324;
+
+    // switch between two tracking modes
+    if (!rawinput::isMouseBeingCentered()) {
+        GetCursorPos(&point);
+    }else {
+        point = rawinput::getMousePos();
+    } 
+
+    if (!is_letterbox) {
+        letter_x = floor(1.0 * point.x / osu_x) * osu_x;
+        letter_y = floor(1.0 * point.y / osu_y) * osu_y;
     }
+    double fx = (1.0 * point.x - letter_x) / s_width;
+    if (is_left_handed) {
+        fx = 1 - fx;
+    }
+    double fy = (1.0 * point.y - letter_y) / s_height;
+    fx = std::min(fx, 1.0);
+    fx = std::max(fx, 0.0);
+    fy = std::min(fy, 1.0);
+    fy = std::max(fy, 0.0);
+    x = -97 * fx + 44 * fy + 184;
+    y = -76 * fx - 40 * fy + 324;
 #endif
 
     return std::make_pair(x, y);

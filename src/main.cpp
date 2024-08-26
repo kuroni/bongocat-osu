@@ -1,4 +1,7 @@
 #include "header.hpp"
+#include <SFML/Graphics.hpp>
+#include <json/json.h>
+#include <iostream>
 
 #if !defined(__unix__) && !defined(__unix)
 #include <windows.h>
@@ -6,13 +9,22 @@
 
 sf::RenderWindow window;
 
+// void AttachConsole() {
+//     if (AllocConsole()) {
+//         freopen("CONOUT$", "w", stdout);  // Redirect stdout to the console
+//         freopen("CONIN$", "r", stdin);   // Redirect stdin to the console
+//         freopen("CONOUT$", "w", stderr); // Redirect stderr to the console
+//     }
+// }
+
 #if defined(__unix__) || defined(__unix)
 int main(int argc, char ** argv) {
 #else
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-#endif
 
-    window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close);
+    // AttachConsole();
+
+    window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Bongo Cat for osu!", sf::Style::Titlebar | sf::Style::Close, sf::ContextSettings(0, 0, 8));
     window.setFramerateLimit(MAX_FRAMERATE);
 
     // loading configs
@@ -21,7 +33,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     }
 
     // initialize input
-    if (!input::init()) {
+    if (!input::init(hInstance)) {
         return EXIT_FAILURE;
     }
 
@@ -95,4 +107,4 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     input::cleanup();
     return 0;
 }
-
+#endif

@@ -15,7 +15,7 @@
 
 #include <math.h>
 #include <string.h>
-
+#include <windows.h> 
 #include <SFML/Graphics.hpp>
 #include "json/json.h"
 
@@ -32,7 +32,8 @@ sf::Texture &load_texture(std::string path);
 }; // namespace data
 
 namespace input {
-bool init();
+void RegisterRawInputDevices(HWND hwnd);
+bool init(HINSTANCE hInstance);
 
 bool is_pressed(int key_code);
 
@@ -47,6 +48,14 @@ void drawDebugPanel();
 
 void cleanup();
 }; // namespace input
+
+namespace rawinput {
+    bool init(HINSTANCE hInstance);
+    POINT getMousePos();
+    bool isMouseBeingCentered();
+}
+
+
 
 namespace osu {
 bool init();
